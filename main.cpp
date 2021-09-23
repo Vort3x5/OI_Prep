@@ -11,8 +11,13 @@ int main()
 
 	cin >> n;
 	cars.resize(n - 1);
-	for(int i = 0; i < n - 1; ++i)
+	for(int i = 0; i < cars.size(); ++i)
 		cin >> cars[i];
 
 	return 0;
 }
+
+/*
+compile:
+g++ -std=c++17 main.cpp
+*/
