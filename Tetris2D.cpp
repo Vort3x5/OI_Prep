@@ -42,7 +42,12 @@ int HighBlock(Inputs obj, int lvl, bool prev_failed = false)
         }
         i = (cuffs[lvl][i] ? cuffs[lvl][i] : ++i);
     }
-    return (prev_failed  || !lvl ? lvl : HighBlock(obj, lvl - 1));
+    if (prev_failed || !lvl)
+    {
+        cuffs[lvl][obj.a] = obj.b;
+        return lvl;
+    }
+    return HighBlock(obj, lvl - 1);
 }
 
 void Solve()
