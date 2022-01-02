@@ -6,16 +6,25 @@ struct Inputs
     int l, x, a, b;
 };
 
-int d, n, sqr_d, last_saved;
-int cuff;
+struct Cuff
+{
+    int val;
+    bool is_full;
+};
+
+int d, n, sqr_d, wdth, last_saved;
 vector <Inputs> arr;
-deque <vector <int>> cuffs;
+vector <int> heights;
+vector <Cuff> cuffs;
 
 void Init()
 {
     cin >> d >> n;
     sqr_d = sqrt(d);
+    wdth = static_cast <int>(d / sqr_d);
     arr.resize(n);
+    heights.resize(d);
+    cuffs.resize(wdth);
     for (int i = 0; i < n; ++i)
     {
         cin >> arr[i].l >> arr[i].x;
@@ -23,40 +32,31 @@ void Init()
     }
 }
 
-void AddLvl()
+int HighBlock(Inputs obj, int lvl)
 {
-    cuffs.push_back(vector <int>(d));
 }
 
-int HighBlock(Inputs obj, int lvl, bool prev_failed = false)
+void Update(Inputs obj)
 {
-    for (int i = cuff; i <= obj.b;)
+    if (!(obj.a % sqr_d) && obj.b >= (obj.a + sqr_d))
     {
-        if (cuffs[lvl][i] > obj.a)
+        int i;
+        for (i = (obj.a / sqr_d); i < obj.b; i += sqr_d)
         {
-            if (cuffs.size() >= (lvl + 1))
-            {
-                AddLvl();
-            }
-            return HighBlock(obj, lvl + 1, true);
+            ++cuffs[i].val, cuffs[i].is_full = true;
         }
-        i = (cuffs[lvl][i] ? cuffs[lvl][i] : ++i);
+        if (obj.b  % sqr_d)
+        {
+        }
     }
-    if (prev_failed || !lvl)
-    {
-        cuffs[lvl][obj.a] = obj.b;
-        return lvl;
-    }
-    return HighBlock(obj, lvl - 1);
 }
 
 void Solve()
 {
-    AddLvl();
     for (int i = 0; i < n; ++i)
     {
-        cuff = ((arr[i].a / sqr_d) * sqr_d);
         last_saved = HighBlock(arr[i], last_saved);
+        Update(arr[i]);
     }
     cout << last_saved + 1 << '\n';
 }
@@ -71,5 +71,3 @@ int main()
 
     return 0;
 }
-
-// stawianie blokow!
