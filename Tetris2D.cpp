@@ -9,10 +9,10 @@ struct Inputs
 struct Cuff
 {
     int val;
-    bool is_full;
+    bool is_full = true;
 };
 
-int d, n, sqr_d, wdth, last_saved;
+int d, n, sqr_d, wdth, last_saved, mx;
 vector <Inputs> arr;
 vector <int> heights;
 vector <Cuff> cuffs;
@@ -34,19 +34,36 @@ void Init()
 
 int HighBlock(Inputs obj, int lvl)
 {
+    for (int i = obj.a; i < obj.b; i += sqr_d)
+    {
+        mx = max(mx, cuffs[i / sqr_d].val);
+    }
+    return mx;
 }
 
 void Update(Inputs obj)
 {
-    if (!(obj.a % sqr_d) && obj.b >= (obj.a + sqr_d))
+    for (int i = obj.a; i < obj.b; 
+            i = !(i % sqr_d) && obj.b >= (i + sqr_d) ? i += sqr_d : ++i)
     {
-        int i;
-        for (i = (obj.a / sqr_d); i < obj.b; i += sqr_d)
+        if (!(i % sqr_d))
         {
-            ++cuffs[i].val, cuffs[i].is_full = true;
+            if (obj.b >= (i + sqr_d))
+            {
+                ++cuffs[i / sqr_d].val, cuffs[i / sqr_d].is_full = true;
+            }
+            else
+            {
+                ++cuffs[i / sqr_d].val, cuffs[i / sqr_d].is_full = false;
+            }
         }
-        if (obj.b  % sqr_d)
+        else
         {
+            ++heights[i];
+            if (heights[i] > cuffs[i / sqr_d].val)
+            {
+                cuffs[i / sqr_d].val = heights[i];
+            }
         }
     }
 }
@@ -55,7 +72,7 @@ void Solve()
 {
     for (int i = 0; i < n; ++i)
     {
-        last_saved = HighBlock(arr[i], last_saved);
+        last_saved = HighBlock(arr[i], last_saved) + 1;
         Update(arr[i]);
     }
     cout << last_saved + 1 << '\n';
