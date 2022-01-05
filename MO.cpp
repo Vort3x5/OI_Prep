@@ -1,9 +1,14 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+struct Qr
+{
+    int a, b, i;
+};
+
 int n, q, sqr_n;
 vector <int> arr;
-vector <pair <int, int>> qs;
+vector <Qr> qs;
 int occs[1000001];
 
 void Init()
@@ -18,14 +23,15 @@ void Init()
     }
     for (int i = 0; i < q; ++i)
     {
-        cin >> qs[i].first >> qs[i].second;
+        cin >> qs[i].a >> qs[i].b;
+        qs[i].i = i;
     }
 }
 
-bool Cmp(pair <int, int> a, pair <int, int> b)
+bool Cmp(Qr lv, Qr rv)
 {
-    return ((a.first / sqr_n) != (b.first / sqr_n) ? (a.first / sqr_n) < (b.first / sqr_n) 
-            : a.second > b.second);
+    return ((lv.a / sqr_n) != (rv.a / sqr_n) ? (lv.a / sqr_n) < (rv.a / sqr_n) 
+            : lv.b > rv.b);
 }
 
 void Solve()
