@@ -12,7 +12,7 @@ struct Cuff
     bool is_full = true;
 };
 
-int d, n, sqr_d, wdth, last_saved, mx;
+int d, n, sqr_d, wdth, mx;
 vector <Inputs> arr;
 vector <int> heights;
 vector <Cuff> cuffs;
@@ -32,38 +32,38 @@ void Init()
     }
 }
 
-int HighBlock(Inputs obj, int lvl)
+int HighBlock(Inputs obj)
 {
-    for (int i = obj.a; i < obj.b; i += sqr_d)
+    int res = 0, i = obj.a;
+    while (i < obj.b)
     {
-        mx = max(mx, cuffs[i / sqr_d].val);
-    }
-    return mx;
-}
-
-void Update(Inputs obj)
-{
-    for (int i = obj.a; i < obj.b; 
-            i = !(i % sqr_d) && obj.b >= (i + sqr_d) ? i += sqr_d : ++i)
-    {
-        if (!(i % sqr_d))
+        if (obj.a <= ((i / sqr_d) * sqr_d))
         {
-            if (obj.b >= (i + sqr_d))
-            {
-                ++cuffs[i / sqr_d].val, cuffs[i / sqr_d].is_full = true;
-            }
-            else
-            {
-                ++cuffs[i / sqr_d].val, cuffs[i / sqr_d].is_full = false;
-            }
+            res = max(res, cuffs[i / sqr_d].val);
         }
         else
         {
-            ++heights[i];
-            if (heights[i] > cuffs[i / sqr_d].val)
-            {
-                cuffs[i / sqr_d].val = heights[i];
-            }
+            res = max(res, heights[i]);
+        }
+        i += pow(((i / sqr_d) * sqr_d + sqr_d - i),
+                (cuffs[i / sqr_d].is_full && ((i / sqr_d) * sqr_d + sqr_d) < obj.b));
+    }
+    return res + 1;
+}
+
+void Update(Inputs obj, int lvl)
+{
+    for (int i = obj.a; i < obj.b; 
+            i += pow(sqr_d, ((!(i % sqr_d) && (i / sqr_d) * sqr_d + sqr_d) < obj.b)))
+    {
+        if (!(i % sqr_d) && ((i / sqr_d) * sqr_d) >= obj.a && (i + sqr_d) <= obj.b)
+        {
+            cuffs[i].val = lvl, cuffs[i].is_full = true;
+        }
+        else
+        {
+            heights[i] = lvl;
+            cuffs[i / sqr_d].val += (heights[i] > cuffs[i / sqr_d].val) * (lvl - cuffs[i / sqr_d].val);
         }
     }
 }
@@ -72,10 +72,10 @@ void Solve()
 {
     for (int i = 0; i < n; ++i)
     {
-        last_saved = HighBlock(arr[i], last_saved) + 1;
-        Update(arr[i]);
+        mx = max(mx, HighBlock(arr[i]));
+        Update(arr[i], HighBlock(arr[i]));
     }
-    cout << last_saved + 1 << '\n';
+    cout << mx << '\n';
 }
 
 int main()
