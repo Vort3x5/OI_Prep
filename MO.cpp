@@ -13,30 +13,48 @@ int occs[1000001];
 
 void Init()
 {
-    cin >> n >> q;
+    cin >> n;
     sqr_n = sqrt(n);
     arr.resize(n);
-    qs.resize(q);
     for (int i = 0; i < n; ++i)
     {
         cin >> arr[i];
     }
+    cin >> q;
+    qs.resize(q);
     for (int i = 0; i < q; ++i)
     {
         cin >> qs[i].a >> qs[i].b;
-        qs[i].i = i;
+        qs[i].i = i  + 1;
     }
 }
 
 bool Cmp(Qr lv, Qr rv)
 {
-    return ((lv.a / sqr_n) != (rv.a / sqr_n) ? (lv.a / sqr_n) < (rv.a / sqr_n) 
+    return ((lv.a / sqr_n) != (rv.a / sqr_n) ? (lv.a / sqr_n) < (rv.a / sqr_n)
             : lv.b > rv.b);
+}
+
+bool Cmp2(Qr lv, Qr rv)
+{
+    return (lv.i <= rv.i);
 }
 
 void Solve()
 {
-    sort(qs.begin(), qs.end(), Cmp);
+    for (auto qr : qs)
+    {
+        int res = 0;
+        for (int i = qr.a - 1; i < qr.b; ++i)
+        {
+            if (occs[arr[i]] != qr.i)
+            {
+                ++res;
+                occs[arr[i]] = qr.i;
+            }
+        }
+        cout << res << '\n';
+    }
 }
 
 int main()
