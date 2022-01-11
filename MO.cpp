@@ -25,7 +25,7 @@ void Init()
     for (int i = 0; i < q; ++i)
     {
         cin >> qs[i].a >> qs[i].b;
-        qs[i].i = i  + 1;
+        qs[i].i = i, --qs[i].a, --qs[i].b;
     }
 }
 
@@ -48,18 +48,18 @@ void Solve()
     for (auto &qr : qs)
     {
         qr.answ = (&qr != &(*qs.begin())) ? (&qr - 1)->answ : 0;
-        while (l != qr.a)
+        do
         {
-            if (l > qr.a)
+            if (l < qr.a)
             {
-                --occs[arr[l]];
-                qr.answ -= !(occs[arr[l]]);
-                --l;
+                --occs[arr[l]], qr.answ -= !(occs[arr[l]]), ++l;
                 continue;
             }
-            qr.answ += !(occs[arr[l]]), ++occs[arr[l]], ++l;
-        }
-        while (r != qr.b)
+            qr.answ += !(occs[arr[l]]), ++occs[arr[l]], --l;
+        } 
+        while (l != qr.a);
+        
+        do
         {
             if (r > qr.b)
             {
@@ -70,7 +70,7 @@ void Solve()
             }
             qr.answ += !(occs[arr[r]]), ++occs[arr[r]], ++r;
         }
-        --l, --r;
+        while (r != qr.b);
         cout << l << ", " << r << '\n';
     }
     sort(qs.begin(), qs.end(), Cmp2);
