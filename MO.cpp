@@ -3,7 +3,7 @@ using namespace std;
 
 struct Qr
 {
-    int a, b, i;
+    int a, b, i, answ;
 };
 
 int n, q, sqr_n;
@@ -43,35 +43,41 @@ bool Cmp2(Qr lv, Qr rv)
 void Solve()
 {
     sort(qs.begin(), qs.end(), Cmp);
-    int l, r, answ = 0;
+    int l, r;
     l = r = qs.begin()->a;
-    for (auto qr : qs)
+    for (auto &qr : qs)
     {
-        while (l != (qr.a - 1))
+        qr.answ = (&qr != &(*qs.begin())) ? (&qr - 1)->answ : 0;
+        while (l != qr.a)
         {
-            if (l > (qr.a - 1))
+            if (l > qr.a)
             {
                 --occs[arr[l]];
-                answ -= !(occs[arr[l]]);
+                qr.answ -= !(occs[arr[l]]);
                 --l;
                 continue;
             }
-            answ += !(occs[arr[l]]), ++occs[arr[l]], ++l;
+            qr.answ += !(occs[arr[l]]), ++occs[arr[l]], ++l;
         }
-        while (r != (qr.a - 1))
+        while (r != qr.b)
         {
-            if (r > (qr.a - 1))
+            if (r > qr.b)
             {
                 --occs[arr[r]];
-                answ -= !(occs[arr[r]]);
+                qr.answ -= !(occs[arr[r]]);
                 --r;
                 continue;
             }
-            answ += !(occs[arr[r]]), ++occs[arr[r]], ++r;
+            qr.answ += !(occs[arr[r]]), ++occs[arr[r]], ++r;
         }
-        cout << answ << '\n';
+        --l, --r;
+        cout << l << ", " << r << '\n';
     }
     sort(qs.begin(), qs.end(), Cmp2);
+    for (auto qr : qs)
+    {
+        cout << qr.answ << '\n';
+    }
 }
 
 int main()
