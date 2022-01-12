@@ -43,11 +43,16 @@ bool Cmp2(Qr lv, Qr rv)
 void Solve()
 {
     sort(qs.begin(), qs.end(), Cmp);
-    int l, r, answ = 0;
+    int l, r, answ = 1;
     l = r = qs.begin()->a;
     ++occs[arr[l]];
     for (auto &qr : qs)
     {
+        if (qr.a == qr.b)
+        {
+            qr.answ = 1;
+            continue;
+        }
         do
         {
             if (l < qr.a)
@@ -55,12 +60,14 @@ void Solve()
                 --occs[arr[l]];
                 answ -= !(occs[arr[l]]);
                 ++l;
-                continue;
             }
-            answ += !(occs[arr[l]]);
-            ++occs[arr[l]];
-            --l;
-        } 
+            else if (l > qr.a)
+            {
+                --l;
+                answ += !(occs[arr[l]]);
+                ++occs[arr[l]];
+            }
+        }
         while (l != qr.a);
         
         do
@@ -70,11 +77,13 @@ void Solve()
                 --occs[arr[r]];
                 answ -= !(occs[arr[r]]);
                 --r;
-                continue;
             }
-            answ += !(occs[arr[r]]);
-            ++occs[arr[l]];
-            ++r;
+            if (r < qr.b)
+            {
+                ++r;
+                answ += !(occs[arr[r]]);
+                ++occs[arr[r]];
+            }
         }
         while (r != qr.b);
         qr.answ = answ;
