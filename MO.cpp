@@ -43,19 +43,23 @@ bool Cmp2(Qr lv, Qr rv)
 void Solve()
 {
     sort(qs.begin(), qs.end(), Cmp);
-    int l, r;
+    int l, r, answ = 0;
     l = r = qs.begin()->a;
+    ++occs[arr[l]];
     for (auto &qr : qs)
     {
-        qr.answ = (&qr != &(*qs.begin())) ? (&qr - 1)->answ : 0;
         do
         {
             if (l < qr.a)
             {
-                --occs[arr[l]], qr.answ -= !(occs[arr[l]]), ++l;
+                --occs[arr[l]];
+                answ -= !(occs[arr[l]]);
+                ++l;
                 continue;
             }
-            qr.answ += !(occs[arr[l]]), ++occs[arr[l]], --l;
+            answ += !(occs[arr[l]]);
+            ++occs[arr[l]];
+            --l;
         } 
         while (l != qr.a);
         
@@ -64,14 +68,16 @@ void Solve()
             if (r > qr.b)
             {
                 --occs[arr[r]];
-                qr.answ -= !(occs[arr[r]]);
+                answ -= !(occs[arr[r]]);
                 --r;
                 continue;
             }
-            qr.answ += !(occs[arr[r]]), ++occs[arr[r]], ++r;
+            answ += !(occs[arr[r]]);
+            ++occs[arr[l]];
+            ++r;
         }
         while (r != qr.b);
-        cout << l << ", " << r << '\n';
+        qr.answ = answ;
     }
     sort(qs.begin(), qs.end(), Cmp2);
     for (auto qr : qs)
