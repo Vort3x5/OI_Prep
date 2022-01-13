@@ -8,11 +8,10 @@ struct Inputs
 
 struct Cuff
 {
-    int val;
-    bool is_full = true;
+    int mx, full;
 };
 
-int d, n, sqr_d, wdth, mx;
+int d, n, sqr_d, wdth, res;
 vector <Inputs> arr;
 vector <int> heights;
 vector <Cuff> cuffs;
@@ -32,50 +31,53 @@ void Init()
     }
 }
 
-int HighBlock(Inputs obj)
+int HighBlock(Inputs qr)
 {
-    int res = 0, i = obj.a;
-    while (i < obj.b)
+    int i = qr.a, mx = 0;
+    while (i < qr.b)
     {
-        if (obj.a <= ((i / sqr_d) * sqr_d))
+        if (!(i % sqr_d) && qr.b >= (i + sqr_d))
         {
-            res = max(res, cuffs[i / sqr_d].val);
+            mx = max(mx, cuffs[i / sqr_d].mx);
+            i += sqr_d;
         }
         else
         {
-            res = max(res, heights[i]);
+            mx = max(mx, max(cuffs[i / sqr_d].full, heights[i]));
+            ++i;
         }
-        i += pow(((i / sqr_d) * sqr_d + sqr_d - i),
-                (cuffs[i / sqr_d].is_full && ((i / sqr_d) * sqr_d + sqr_d) < obj.b));
     }
-    return res + 1;
+    return mx;
 }
 
-void Update(Inputs obj, int lvl)
+void Update(Inputs qr)
 {
-    for (int i = obj.a; i < obj.b; 
-            i += pow(sqr_d, ((!(i % sqr_d) && (i / sqr_d) * sqr_d + sqr_d) < obj.b)))
+    int i = qr.a, val = HighBlock(qr) + 1;
+    res = max(res, val);
+    while (i < qr.b)
     {
-        if (!(i % sqr_d) && ((i / sqr_d) * sqr_d) >= obj.a && (i + sqr_d) <= obj.b)
+        if (!(i % sqr_d) && qr.b >= (i + sqr_d))
         {
-            cuffs[i].val = lvl, cuffs[i].is_full = true;
+            cuffs[i / sqr_d].full = val;
+            cuffs[i / sqr_d].mx = val;
+            i += sqr_d;
         }
         else
         {
-            heights[i] = lvl;
-            cuffs[i / sqr_d].val += (heights[i] > cuffs[i / sqr_d].val) * (lvl - cuffs[i / sqr_d].val);
+            heights[i] = val;
+            cuffs[i / sqr_d].mx = max(cuffs[i / sqr_d].mx, heights[i]);
+            ++i;
         }
     }
 }
 
 void Solve()
 {
-    for (int i = 0; i < n; ++i)
+    for (auto qr : arr)
     {
-        mx = max(mx, HighBlock(arr[i]));
-        Update(arr[i], HighBlock(arr[i]));
+        Update(qr);
     }
-    cout << mx << '\n';
+    cout << res << '\n';
 }
 
 int main()
