@@ -39,27 +39,31 @@ void Init()
     }
 }
 
-int Query(Qr q, int v = 1)
+int Query(Qr qr, int v = 1)
 {
-    if (tree[v].a > q.b || tree[v].b < tree[v].a)
+    if (qr.a == 1 && qr.b == n)
+    {
+        return tree[1].val;
+    }
+    if (tree[v].a > qr.b || tree[v].b < tree[v].a)
     {
         return 0;
     }
-    else if (tree[v].a >= q.a && tree[v].b <= q.b)
+    else if (tree[v].a >= qr.a && tree[v].b <= qr.b)
     {
         return tree[v].val;
     }
     else
     {
-        return (Query(q, v * 2) + Query(q, (v * 2) + 1));
+        return (Query(qr, v * 2) + Query(qr, (v * 2) + 1));
     }
 }
 
-void Insert(Qr q)
+void Insert(Qr qr)
 {
-    int add_b = q.b;
-    int add_a = tree[q.a + l].val;
-    for (int node = q.a + l; node > 0; node /= 2)
+    int add_b = qr.b;
+    int add_a = tree[qr.a + l].val;
+    for (int node = qr.a + l; node > 0; node /= 2)
     {
         tree[node].val -= add_a;
         tree[node].val += add_b;
@@ -70,16 +74,16 @@ void Solve()
 {
     for (int i = 0; i < q; ++i)
     {
-        Qr q;
-        cin >> q.type >> q.a >> q.b;
-        switch(q.type)
+        Qr qr;
+        cin >> qr.type >> qr.a >> qr.b;
+        switch(qr.type)
         {
             case 1:
-                Insert(q);
+                Insert(qr);
                 break;
 
             case 2:
-                cout << Query(q) << '\n';
+                cout << Query(qr) << '\n';
                 break;
         }
     }
