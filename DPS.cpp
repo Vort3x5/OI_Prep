@@ -8,35 +8,21 @@ struct Qr
 
 struct Node
 {
-    int val, add, a, b;
+    long long val, add, a, b;
 };
 
 int n, q, l, lfs;
 vector <Node> tree;
-vector <Qr> qs;
 
 void Init()
 {
     cin >> n >> q;
     lfs = (1 << int((log2(n)) + 1));
     tree.resize(2 * lfs);
-    qs.resize(q);
     l = lfs - 1;
     for (int i = 1; i <= n; ++i)
     {
         cin >> tree[i + l].val;
-    }
-    for (int i = 0; i < q; ++i)
-    {
-        cin >> qs[i].r;
-        if (qs[i].r == 1)
-        {
-            cin >> qs[i].a >> qs[i].b >> qs[i].c;
-        }
-        else
-        {
-            cin >> qs[i].a;
-        }
     }
     tree[1].a = 1, tree[1].b = lfs;
     for (int node = 1; node < (1 + l); ++node)
@@ -49,12 +35,12 @@ void Init()
     }
 }
 
-bool IsInRange(int v, int node)
+bool IsInRange(long long v, long long node)
 {
     return ((tree[v].b >= node && node >= tree[v].a) || node == (v - l));
 }
 
-int Query(int node, int v = 1, int res = 0)
+long long Query(long long node, long long v = 1, long long res = 0)
 {
     if (v == (node + l))
     {
@@ -67,7 +53,7 @@ int Query(int node, int v = 1, int res = 0)
     }
 }
 
-void Insert(Qr &q, int v = 1)
+void Insert(Qr &q, long long v = 1)
 {
     if (tree[v].b < q.a || tree[v].a > q.b)
     {
@@ -87,15 +73,19 @@ void Insert(Qr &q, int v = 1)
 
 void Solve()
 {
-    for (auto q : qs)
+    for (int i = 0; i < q; ++i)
     {
+        Qr q;
+        cin >> q.r;
         switch (q.r)
         {
             case 1:
+                cin >> q.a >> q.b >> q.c;
                 Insert(q);
                 break;
 
             case 2:
+                cin >> q.a;
                 cout << Query(q.a) << '\n';
                 break;
         }
