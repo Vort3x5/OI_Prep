@@ -8,7 +8,7 @@ struct Qr
 
 struct Node
 {
-    long long val, add, a, b;
+    long long add, a, b;
 };
 
 int n, q, l, lfs;
@@ -22,7 +22,7 @@ void Init()
     l = lfs - 1;
     for (int i = 1; i <= n; ++i)
     {
-        cin >> tree[i + l].val;
+        cin >> tree[i + l].add;
     }
     tree[1].a = 1, tree[1].b = lfs;
     for (int node = 1; node < (1 + l); ++node)
@@ -44,7 +44,7 @@ long long Query(long long node, long long v = 1, long long res = 0)
 {
     if (v == (node + l))
     {
-        return (res + tree[node + l].val + tree[node + l].add);
+        return (res + tree[node + l].add);
     }
     else
     {
