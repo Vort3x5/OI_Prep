@@ -48,7 +48,7 @@ int Query(Qr q, int v = 1)
 
 void Insert(Qr q)
 {
-    int add_b = tree[q.b + l].val;
+    int add_b = q.b;
     int add_a = tree[q.a + l].val;
     for (int node = q.a + l; node > 0; node /= 2)
     {
