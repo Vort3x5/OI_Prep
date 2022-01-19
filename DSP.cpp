@@ -28,6 +28,15 @@ void Init()
             tree[node].val += tree[v + l].val;
         }
     }
+	tree[1].a = 1, tree[1].b = lfs;
+    for (int node = 1; node < (1 + l); ++node)
+    {
+        tree[node * 2].a = tree[node].a;
+        tree[node * 2].b = (tree[node].a + tree[node].b) / 2;
+        
+        tree[(node * 2) + 1].a = (tree[node].a + tree[node].b) / 2 + 1;
+        tree[(node * 2) + 1].b = tree[node].b;
+    }
 }
 
 int Query(Qr q, int v = 1)
