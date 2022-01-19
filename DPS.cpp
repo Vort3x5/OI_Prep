@@ -69,25 +69,20 @@ int Query(int node, int v = 1, int res = 0)
 
 void Insert(Qr &q, int v = 1)
 {
-    if (q.a > q.b)
+    if (tree[v].b < q.a || tree[v].a > q.b)
     {
         return;
     }
-    else if (q.a == q.b)
-    {
-        tree[q.a + l].add += q.c;
-        return;
-    }
-    if ((tree[v].a == q.a || (v - l) == q.a) && tree[v].b <= q.b)
+    else if (tree[v].a >= q.a && tree[v].b <= q.b)
     {
         tree[v].add += q.c;
-        q.a = tree[v].b + 1;
-        return Insert(q, v / 2);
     }
     else
     {
-        Insert(q, (IsInRange(v * 2, q.a) ? v * 2 : (v * 2) + 1));
+        Insert(q, v * 2);
+        Insert(q, (v * 2) + 1);
     }
+
 }
 
 void Solve()
