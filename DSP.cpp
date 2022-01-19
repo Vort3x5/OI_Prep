@@ -8,12 +8,11 @@ struct Qr
 
 struct Node
 {
-    int val, a, b;
+    long long val, a, b;
 };
 
 int n, q, l, lfs;
 vector <Node> tree;
-vector <Qr> qs;
 
 void Init()
 {
@@ -21,7 +20,6 @@ void Init()
     lfs = (1 << int((log2(n)) + 1));
     l = lfs - 1;
     tree.resize(2 * lfs);
-    qs.resize(q);
     for (int v = 1; v <= n; ++v)
     {
         cin >> tree[v + l].val;
@@ -29,10 +27,6 @@ void Init()
         {
             tree[node].val += tree[v + l].val;
         }
-    }
-    for (int i = 0; i < q; ++i)
-    {
-        cin >> qs[i].type >> qs[i].a >> qs[i].b;
     }
 }
 
@@ -61,17 +55,14 @@ void Insert(Qr q)
         tree[node].val -= add_a;
         tree[node].val += add_b;
     }
-    for (int node = q.b + l; node > 0; node /= 2)
-    {
-        tree[node].val -= add_b;
-        tree[node].val += add_a;
-    }
 }
 
 void Solve()
 {
-    for (auto q : qs)
+    for (int i = 0; i < q; ++i)
     {
+        Qr q;
+        cin >> q.type >> q.a >> q.b;
         switch(q.type)
         {
             case 1:
