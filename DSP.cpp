@@ -39,24 +39,33 @@ void Init()
     }
 }
 
-int Query(Qr qr, int v = 1)
+bool IsInRange(long long v, long long node)
 {
-    if (qr.a == 1 && qr.b == n)
+    return ((tree[v].b >= node && node >= tree[v].a) || node == (v - l));
+}
+
+long long Query(Qr qr, long long v = 1)
+{
+    long long res = 0;
+    while (qr.a <= qr.b)
     {
-        return tree[1].val;
+        if (qr.a == qr.b)
+        {
+            res += tree[qr.a + l].val;
+            ++qr.a;
+        }
+        else if (tree[v].a == qr.a && tree[v].b <= qr.b)
+        {
+            qr.a = (tree[v].b < qr.b) ? tree[v].b + 1 : qr.b + 1;
+            res += tree[v].val;
+            v /= 2;
+        }
+        else
+        {
+            v = IsInRange(v * 2, qr.a) ? v * 2 : (v * 2) + 1;
+        }
     }
-    if (tree[v].a > qr.b || tree[v].b < tree[v].a)
-    {
-        return 0;
-    }
-    else if (tree[v].a >= qr.a && tree[v].b <= qr.b)
-    {
-        return tree[v].val;
-    }
-    else
-    {
-        return (Query(qr, v * 2) + Query(qr, (v * 2) + 1));
-    }
+    return res;
 }
 
 void Insert(Qr qr)
