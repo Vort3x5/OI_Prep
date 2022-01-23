@@ -46,26 +46,18 @@ bool IsInRange(long long v, long long node)
 
 long long Query(Qr qr, long long v = 1)
 {
-    long long res = 0;
-    while (qr.a <= qr.b)
+    if (tree[v].b < qr.a || tree[v].a > qr.b)
     {
-        if (qr.a == qr.b)
-        {
-            res += tree[qr.a + l].val;
-            ++qr.a;
-        }
-        else if (tree[v].a == qr.a && tree[v].b <= qr.b)
-        {
-            qr.a = (tree[v].b < qr.b) ? tree[v].b + 1 : qr.b + 1;
-            res += tree[v].val;
-            v /= 2;
-        }
-        else
-        {
-            v = IsInRange(v * 2, qr.a) ? v * 2 : (v * 2) + 1;
-        }
+        return 0;
     }
-    return res;
+    else if (tree[v].a >= qr.a && tree[v].b <= qr.b)
+    {
+        return tree[v].val;
+    }
+    else
+    {
+        return Query(qr, v * 2) + Query(qr, v * 2);
+    }
 }
 
 void Insert(Qr qr)
