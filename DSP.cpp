@@ -16,8 +16,8 @@ vector <Node> tree;
 
 void Insert(Qr qr)
 {
-    int add_b = qr.b;
-    int add_a = tree[qr.a + l].val;
+    long long add_b = qr.b;
+    long long add_a = tree[qr.a + l].val;
     for (int node = qr.a + l; node > 0; node /= 2)
     {
         tree[node].val -= add_a;
@@ -37,21 +37,24 @@ void Init()
     }
 }
 
-unsigned long long Query(Qr qr, int a = 1, int b = lfs, int v = 1)
+unsigned long long Query(Qr qr)
 {
-    if (b < qr.a || a > qr.b)
+    long long a = qr.a + l;
+    long long b = qr.b + l;
+    long long sum = a != b * tree[b].val + tree[a].val;
+    while(a / 2 != b / 2)
     {
-        return 0;
+        if (!(a % 2))
+        {
+            sum += tree[a + 1].val;
+        }
+        if (b % 2)
+        {
+            sum += tree[b - 1].val;
+        }
+        a /= 2, b /= 2;
     }
-    else if (a >= qr.a && b <= qr.b)
-    {
-        return tree[v].val;
-    }
-    else
-    {
-        int mid = (a + b) / 2;
-        return Query(qr, a, mid, v * 2) + Query(qr, mid + 1, b, (v * 2) + 1);
-    }
+    return sum;
 }
 
 void Solve()
