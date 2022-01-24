@@ -8,7 +8,8 @@ struct Qr
 
 struct Node
 {
-    long long val, a, b;
+    unsigned long long val; 
+    int a, b;
 };
 
 int n, q, l, lfs;
@@ -23,7 +24,7 @@ void Init()
     for (int v = 1; v <= n; ++v)
     {
         cin >> tree[v + l].val;
-        for (int node = v + l; node > 0; node /= 2)
+        for (int node = (v + l) / 2; node > 0; node /= 2)
         {
             tree[node].val += tree[v + l].val;
         }
@@ -44,7 +45,7 @@ bool IsInRange(long long v, long long node)
     return ((tree[v].b >= node && node >= tree[v].a) || node == (v - l));
 }
 
-long long Query(Qr qr, long long v = 1)
+unsigned long long Query(Qr qr, int v = 1)
 {
     if (tree[v].b < qr.a || tree[v].a > qr.b)
     {
@@ -56,7 +57,7 @@ long long Query(Qr qr, long long v = 1)
     }
     else
     {
-        return Query(qr, v * 2) + Query(qr, v * 2);
+        return Query(qr, v * 2) + Query(qr, (v * 2) + 1);
     }
 }
 
