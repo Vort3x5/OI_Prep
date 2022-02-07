@@ -1,6 +1,8 @@
 import subprocess as proc
 import sys
 
+N = int(sys.argv[1])
+
 def Compile():
     try:
         proc.run(["g++", "K0.cpp", "-o", "bin/main"], check=True)
@@ -14,7 +16,7 @@ def Compile():
         print("Compilation of brut failed")
         exit(1)
 
-def MakeCases(N):
+def MakeCases():
     proc.run(["python3", "clear_tests.py"])
     proc.run(["python3", "Gen.py", str(N)])
     for i in range (N):
@@ -22,17 +24,30 @@ def MakeCases(N):
             ins = f.read()
             ins = ins.strip()
         
-        with open("Given_Out/G_Res" + str(i) + ".out") as f:
-            proc.run(["cmd >>", f.name])
-       
-        proc.run("./bin/main")
-        proc.run(["echo", ins])
-        proc.run("./bin/brut")
-        proc.run(["echo", ins])
+        with open("Given_Out/G_Res" + str(i) + ".out", "w+") as f:
+            proc.run("./bin/main")
+            proc.run(["echo", ins, ">>", f.name()])
+        
+        with open("Expected_Out/E_Res" + str(i) + ".out", "w+") as f:
+            proc.run("./bin/brut")
+            proc.run(["echo", ins, ">>", f.name()])
 
 def CmpRes():
-    pass
+    for i in range(N):
+        main_res = ""
+        with open("Given_Out/G_Res" + str(i) + ".out") as f:
+            main_res = f.read()
+        brut_res = ""
+        with open("Expected_Out/E_Res" + str(i) + ".out") as f:
+            brut_res = f.read()
+        
+        if main_res.strip() == brut_res.strip():
+            print("Git\n")
+        else:
+            print("Niet\n")
+        print ("poprawny:\t" + brut_res + '\n')
+        print ("Czewiasty:\t" + main_res + '\n')
 
 Compile()
-MakeCases(sys.argv[1])
+MakeCases()
 CmpRes()

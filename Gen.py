@@ -1,9 +1,7 @@
 import random as rd
 import sys
 
-global tree
 global to_push
-global qs
 
 tree = []
 qs = []
@@ -17,6 +15,7 @@ def Are_Z0s(tree):
 def Generate(tree, qs):
     global n
     global q
+    global z_count
     
     n = rd.randint(1, 16)
     q = rd.randint(1, 16)
@@ -26,22 +25,21 @@ def Generate(tree, qs):
 
     to_push = []
 
+    z_count = 0
     for i in range(n):
         tree.append(rd.randint(0, 10))
+        if tree[i] == 0:
+            z_count += 1
+    if z_count == 0:
+        for i in range(3):
+            tree[rd.randint(0, n - 1)] = 0
 
     for i in range(q):
-        no_zero = True
-        while no_zero:
-            type = (rd.randint(1, 2))
-            if type == 1:
-                no_zero = False
-            else:
-                if (Are_Z0s(tree)):
-                    no_zero = False
+        type = (rd.randint(1, 2))
         
         to_push.append(type)
         if (type == 1):
-            to_push.append(rd.randint(1, 16))
+            to_push.append(rd.randint(1, n - 1))
             to_push.append(rd.randint(0, 10))
         else:
             correct = False
