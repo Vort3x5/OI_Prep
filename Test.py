@@ -20,17 +20,13 @@ def MakeCases():
     proc.run(["python3", "clear_tests.py"])
     proc.run(["python3", "Gen.py", str(N)])
     for i in range (N):
-        with open("In/Inpts" + str(i) + ".in") as f:
-            ins = f.read()
-            ins = ins.strip()
+        with open("In/Inpts" + str(i) + ".in") as In:
         
-        with open("Given_Out/G_Res" + str(i) + ".out", "w+") as f:
-            proc.run("./bin/main")
-            proc.run(["echo", ins, ">>", f.name()])
-        
-        with open("Expected_Out/E_Res" + str(i) + ".out", "w+") as f:
-            proc.run("./bin/brut")
-            proc.run(["echo", ins, ">>", f.name()])
+            with open("Given_Out/G_Res" + str(i) + ".out", "w+") as Out:
+                proc.run(["./bin/main", '<', In.name, '>', Out.name])
+            
+            with open("Expected_Out/E_Res" + str(i) + ".out", "w+") as Out:
+                proc.run(["./bin/brut", '<', In.name, '>', Out.name])
 
 def CmpRes():
     for i in range(N):
