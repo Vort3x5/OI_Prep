@@ -75,9 +75,27 @@ void Insert(int node, int val)
     Insert(node, val);
 }
 
-int Qr(int a, int b, int this_a, int this_b)
+int Qr(int a, int b, int x)
 {
     static set <lf> range;
+    int this_a = a + nol;
+    int this_b = b + nol;
+
+    range.insert(tree[this_a].lfs.begin(), tree[this_a].lfs.end());
+    range.insert(tree[this_b].lfs.begin(), tree[this_b].lfs.end());
+    while (this_a != this_b)
+    {
+        if (!(this_a % 2))
+        {
+            range.insert(tree[this_a].lfs.begin(), tree[this_a].lfs.end());
+        }
+        if (!(this_b % 2))
+        {
+            range.insert(tree[this_b].lfs.begin(), tree[this_b].lfs.end());
+        }
+        this_a /= 2, this_b /= 2;
+    }
+    return upper_bound(range.begin(), range.end(), x)->indx;
 }
 
 void Solve()
@@ -93,7 +111,9 @@ void Solve()
                 break;
 
             case 2:
-                cout << Qr(qr.a - 1, qr.b) << '\n';
+                int x;
+                cin >> x;
+                cout << Qr(qr.a - 1, qr.b - 1, x) + 1 << '\n';
                 break;
         }
     }
