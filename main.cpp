@@ -31,7 +31,9 @@ void FillTree(int lvl_l = nol / 2, int node = nol / 2)
 {
     tree[node].lfs = tree[node * 2].lfs;
     tree[node].lfs.insert(
-            tree[(node * 2 ) + 1].lfs.begin(), tree[(node * 2) + 1].lfs.end());
+            tree[(node * 2 ) + 1].lfs.begin(), 
+            tree[(node * 2) + 1].lfs.end()
+            );
 
     if (node == 1)
     {
@@ -41,7 +43,8 @@ void FillTree(int lvl_l = nol / 2, int node = nol / 2)
     {
         FillTree(
                 node - lvl_l == lvl_l - 1 ? lvl_l / 2 : lvl_l, 
-                node - lvl_l == lvl_l - 1 ? lvl_l / 2 : node + 1);
+                node - lvl_l == lvl_l - 1 ? lvl_l / 2 : node + 1\
+                );
     }
 }
 
@@ -95,7 +98,7 @@ int Qr(int a, int b, int x)
         }
         this_a /= 2, this_b /= 2;
     }
-    return upper_bound(range.begin(), range.end(), x)->indx;
+    return upper_bound(range.begin(), range.end(), x) -> indx;
 }
 
 void Solve()
