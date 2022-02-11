@@ -11,89 +11,62 @@ typedef vector <int> v_i;
 
 struct Node
 {
-    ll val;
-    Node *l, *r;
-    
-    Node(ll a)
-        : val(a), l(nullptr), r(nullptr) {}
+    int val;
 };
 
 struct Query
 {
-    ll lett, num;
+    int type, x, y;
 };
 
-ll N, M;
-Node *Tree;
+int N, M, lfs;
 
-void BuildTree(Node *node = Tree, ll a = 1, ll b = N)
-{
-    if (a == b)
-    {
-        node = new Node(a);
-    }
-    else
-    {
-        node = new Node(0);
-        BuildTree(node -> l, a, b / 2);
-        BuildTree(node -> r, (b / 2) + 1, b);
-    }
-}
+vector <Node> tree;
 
 void Init()
 {
-    cin >> N >> M;
-    BuildTree();
+    cin >> N;
+    lfs = (1 << int((log2(N)) + 1));
+    tree.resize(2 * lfs);
+    for (int node = 0; node < N; ++node)
+    {
+        cin >> tree[lfs + node].val;
+        for (int v = lfs + node; v >= 1; v /= 2)
+        {
+            tree[v].val += tree[lfs + node].val;
+        }
+    }
+    cin >> M;
 }
 
-void Insert(Query q, int a = 1, int b = N, Node *node = Tree)
+void Insert(int node, int prev_x, int x)
 {
-    if (b < q.num || a > N)
+    tree[node].val += (x - prev_x);
+    if (node == 1)
     {
         return;
     }
-    else if (a >= q.num || b <= N)
-    {
-        ++(node -> val);
-    }
-    else
-    {
-        Insert(q, a, b / 2, node -> l);
-        Insert(q, (b / 2) + 1, b, node -> l);
-    }
+    Insert(node /= 2, prev_x, x);
 }
 
-ll Qr(Query q, Node *node = Tree, ll a = 1, ll b = N)
+int Qr()
 {
-    if (a == b)
-    {
-        return node->val;
-    }
-    else
-    {
-        return node->val + Qr(
-                q, 
-                (b / 2) <= q.num ? node -> l : node -> r, 
-                (b / 2) <= q.num ? a : (b / 2) + 1,
-                (b / 2) <= q.num ? b / 2 : b
-                );
-    }
 }
 
 void Solve()
 {
-    for (ll i = 0; i < M; ++i)
+    for (int i = 0; i < M; ++i)
     {
         Query q;
-        cin >> q.lett >> q.num;
-        switch (q.lett)
+        cin >> q.type >> q.x >> q.y;
+        switch (q.type)
         {
-            case 'L':
-                cout << Qr(q) << '\n';
+            case 0:
+                Insert(q.x, tree[lfs + q.x].val, q.y);
                 break;
-
-            case 'D':
-                Insert(q);
+            
+            case 1:
+                // cout << Qr() << '\n';
                 break;
         }
     }
