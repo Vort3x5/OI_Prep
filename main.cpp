@@ -32,6 +32,10 @@ void BuildTree(Node *node = Tree, ll a = 1, ll b = N)
     {
         node = new Node(a);
     }
+    else if (a > b)
+    {
+        return;
+    }
     else
     {
         node = new Node(0);
