@@ -19,7 +19,7 @@ struct Node
 
 struct Query
 {
-    int type, a, b;
+    int a, b, x;
 };
 
 int n, q, nums_of_lfs;
@@ -106,19 +106,7 @@ void Solve()
     for (int i = 0; i < q; ++i)
     {
         Query qr;
-        cin >> qr.type >> qr.a >> qr.b;
-        switch (qr.type)
-        {
-            case 1:
-                Insert(qr.a - 1, qr.b);
-                break;
-
-            case 2:
-                int x;
-                cin >> x;
-                cout << Qr(qr.a - 1, qr.b - 1, x) + 1 << '\n';
-                break;
-        }
+        cin >> qr.a >> qr.b;
     }
 }
 
