@@ -50,7 +50,7 @@ void FillTree(int lvl_l = nol / 2, int node = nol / 2)
 
 void Init()
 {
-    cin >> n >> q;
+    cin >> n;
     arr.resize(n);
     nol = (1 << int((log2(n)) + 1));
     tree.resize(2 * nol);
@@ -61,6 +61,7 @@ void Init()
         tree[node + nol].lfs.insert({node, v});
         ++node;
     }
+    cin >> q;
     FillTree();
 }
 
