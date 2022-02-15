@@ -14,17 +14,6 @@ struct Node
 int n, q, l, lfs;
 vector <Node> tree;
 
-void Insert(Qr qr)
-{
-    long long add_b = qr.b;
-    long long add_a = tree[qr.a + l].val;
-    for (int node = qr.a + l; node > 0; node /= 2)
-    {
-        tree[node].val -= add_a;
-        tree[node].val += add_b;
-    }
-}
-
 void Init()
 {
     cin >> n >> q;
@@ -33,7 +22,21 @@ void Init()
     tree.resize(2 * lfs);
     for (int v = 1; v <= n; ++v)
     {
-        cin >> tree[v + l].val;
+        unsigned long long x;
+        cin >> x;
+        for (int node = v + l; node > 0; node /= 2)
+            tree[node].val += x;
+    }
+}
+
+void Insert(Qr qr)
+{
+    long long add_b = qr.b;
+    long long add_a = tree[qr.a + l].val;
+    for (int node = qr.a + l; node > 0; node /= 2)
+    {
+        tree[node].val -= add_a;
+        tree[node].val += add_b;
     }
 }
 
