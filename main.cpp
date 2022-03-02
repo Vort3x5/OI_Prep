@@ -11,91 +11,99 @@ typedef vector <int> v_i;
 
 struct Node
 {
-    int psoms, sum, pref, suf;
+    int sum, lazy;
 };
 
 struct Query
 {
-    int type, x, y;
+    int type, p, q, v;
 };
 
-int N, M, lfs, min_v = -10010;
+int T, N, C, lfs, l;
 
 vector <Node> tree;
 
-void Update(int x, Node &parent, Node l, Node r, bool is_child = false)
-{
-    if (is_child)
-    {
-        parent.pref = parent.suf = parent.psoms = parent.sum = x;
-    }
-    else
-    {
-        parent.psoms = max(max(l.psoms, r.psoms), l.suf + r.pref);
-        parent.suf = max(r.suf, r.sum + l.suf);
-        parent.pref = max(l.pref, l.sum + r.pref);
-        parent.sum = l.sum + r.sum;
-    }
-}
-
-void Insert(int node, int x)
-{
-    while (node > 0)
-    {
-        Update(x, tree[node], tree[node * 2], tree[(node * 2) + 1]);
-        node /= 2;
-    }
-}
-
 void Init()
 {
-    cin >> N;
+    cin >> N >> C;
     lfs = (1 << int((log2(N)) + 1));
     tree.resize(2 * lfs);
-    for (int node = 0; node < N; ++node)
-    {
-        int x;
-        cin >> x;
-        Update(x, tree[node + lfs], tree[node + lfs], tree[node + lfs], true);
-        Insert((node + lfs) / 2, x);
-    }
-    cin >> M;
+    l = lfs - 1;
 }
 
-Node Qr(Query q, int a = 1, int b = N, int node = 1)
+void GoDown(int &mid, int &abl, int &abr, int a, int b, int v)
 {
-    static Node res;
-    if (b < q.x || a > q.y)
+    mid = (a + b) / 2;
+    abl = mid - a + 1;
+    abr = b - mid;
+    tree[v * 2].lazy += tree[v].lazy;
+    tree[(v * 2) + 1].lazy += tree[v].lazy;
+    tree[v * 2].sum += tree[v].lazy * abl;
+    tree[(v * 2) + 1].sum += tree[v].lazy * abr;
+    tree[v].lazy = 0;
+}
+
+void Insert(Query q, int a = 1, int b = lfs, int v = 1)
+{
+    if (a > q.q || b < q.p)
     {
-        return { min_v, 0, 0, 0 };
+        return;
     }
-    else if (a >= q.x && b <= q.y)
+    else if (a >= q.p && b <= q.q)
     {
-        return tree[node];
+        tree[v].lazy += q.v;
+        tree[v].sum += (b - a + 1) * q.v;
     }
     else
     {
-        int mid = (a + b) / 2;
-        Update(0, res, Qr(q, a, mid, node * 2), Qr(q, mid + 1, b, (node * 2) + 1));
-        return res;
+        int mid, abl, abr;
+        GoDown(mid, abl, abr, a, b, v);
+        Insert(q, a, mid, v * 2);
+        Insert(q, mid + 1, b, (v * 2) + 1);
+        tree[v].sum = tree[v * 2].sum + tree[(v * 2) + 1].sum;
+    }
+}
+
+int Qr(Query q, int a = 1, int b = lfs, int v = 1)
+{
+    if (a > q.q || b < q.p)
+    {
+        return 0;
+    }
+    else if (a >= q.p && b <= q.q)
+    {
+        return tree[v].sum;
+    }
+    else
+    {
+        int mid, abl, abr;
+        GoDown(mid, abl, abr, a, b, v);
+        return Qr(q, a, mid, v * 2) +
+        Qr(q, mid + 1, b, (v * 2) + 1);
     }
 }
 
 void Solve()
 {
-    for (int i = 0; i < M; ++i)
+    cin >> T;
+    for (int i = 0; i < T; ++i)
     {
-        Query q;
-        cin >> q.type >> q.x >> q.y;
-        switch (q.type)
+        Init();
+        for (int j = 0; j < C; ++j)
         {
-            case 0:
-                Insert(q.x, q.y + lfs - 1);
-                break;
-            
-            case 1:
-                cout << Qr(q).psoms << '\n';
-                break;
+            Query q;
+            cin >> q.type >> q.p >> q.q;
+            switch(q.type)
+            {
+                case 0:
+                    cin >> q.v;
+                    Insert(q);
+                    break;
+                
+                case 1:
+                    cout << Qr(q) << '\n';
+                    break;
+            }
         }
     }
 }
@@ -105,7 +113,6 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    Init();
     Solve();
 
     return 0;
