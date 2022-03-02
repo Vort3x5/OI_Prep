@@ -1,12 +1,13 @@
 #include <bits/stdc++.h>
 
 #define nol nums_of_lfs
+#define ll long long
 
 using namespace std;
 
 struct lf
 {
-    int indx, val;
+    ll indx, val;
 };
 
 bool operator<(lf l, lf r)
@@ -19,32 +20,23 @@ struct Node
 
 struct Query
 {
-    int a, b, x;
+    ll a, b, x;
 };
 
 int n, q, nums_of_lfs;
 
-vector <int> arr;
+vector <ll> arr;
 vector <Node> tree;
 
-void FillTree(int lvl_l = nol / 2, int node = nol / 2)
+void Insert(int node, int val)
 {
-    tree[node].lfs = tree[node * 2].lfs;
-    tree[node].lfs.insert(
-            tree[(node * 2 ) + 1].lfs.begin(), 
-            tree[(node * 2) + 1].lfs.end()
-            );
-
-    if (node == 1)
+    int v = node + nol;
+    while (v > 0)
     {
-        return;
-    }
-    else
-    {
-        FillTree(
-                node - lvl_l == lvl_l - 1 ? lvl_l / 2 : lvl_l, 
-                node - lvl_l == lvl_l - 1 ? lvl_l / 2 : node + 1\
-                );
+        auto to_del = tree[v].lfs.find({node, arr[node]});
+        tree[v].lfs.erase(to_del);
+        tree[v].lfs.insert({node, val});
+        v /= 2;
     }
 }
 
@@ -58,48 +50,28 @@ void Init()
     {
         static int node = 0;
         cin >> v;
-        tree[node + nol].lfs.insert({node, v});
+        Insert(node, v);
         ++node;
     }
     cin >> q;
-    FillTree();
 }
 
-void Insert(int node, int val)
+int Qr(Query qr, int a = 1, int b = nol, int v = 1)
 {
-    static int v = node + nol;
-    auto to_del = tree[v].lfs.find({node, arr[node]});
-    tree[v].lfs.erase(to_del);
-    tree[v].lfs.insert({node, val});
-    if (v == 1)
+    if (a > qr.b || b < qr.a)
     {
-        return;
+        return 0;
     }
-    v /= 2;
-    Insert(node, val);
-}
-
-int Qr(int a, int b, int x)
-{
-    static set <lf> range;
-    int this_a = a + nol;
-    int this_b = b + nol;
-
-    range.insert(tree[this_a].lfs.begin(), tree[this_a].lfs.end());
-    range.insert(tree[this_b].lfs.begin(), tree[this_b].lfs.end());
-    while (this_a != this_b)
+    else if (a >= qr.a && b <= qr.b)
     {
-        if (!(this_a % 2))
-        {
-            range.insert(tree[this_a].lfs.begin(), tree[this_a].lfs.end());
-        }
-        if (!(this_b % 2))
-        {
-            range.insert(tree[this_b].lfs.begin(), tree[this_b].lfs.end());
-        }
-        this_a /= 2, this_b /= 2;
+        return 
+            (arr.size() - upper_bound(tree[v].lfs.begin(), tree[v].lfs.end(), qr.x) -> indx);
     }
-    return upper_bound(range.begin(), range.end(), x) -> indx;
+    else
+    {
+        int mid = (a + b) / 2;
+        return max(Qr(qr, a, mid, v * 2), Qr(qr, mid + 1, b, (v * 2) + 1));
+    }
 }
 
 void Solve()
@@ -107,7 +79,8 @@ void Solve()
     for (int i = 0; i < q; ++i)
     {
         Query qr;
-        cin >> qr.a >> qr.b;
+        cin >> qr.a >> qr.b >> qr.x;
+        cout << Qr(qr) << '\n';
     }
 }
 
