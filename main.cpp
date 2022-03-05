@@ -20,34 +20,16 @@ struct Node
 
 struct Query
 {
-    ll lett, num;
+    char lett;
+    ll num;
 };
 
 ll N, M;
 Node *Tree;
 
-void BuildTree(Node *node = Tree, ll a = 1, ll b = N)
-{
-    if (a == b)
-    {
-        node = new Node(a);
-    }
-    else if (a > b)
-    {
-        return;
-    }
-    else
-    {
-        node = new Node(0);
-        BuildTree(node -> l, a, b / 2);
-        BuildTree(node -> r, (b / 2) + 1, b);
-    }
-}
-
 void Init()
 {
     cin >> N >> M;
-    BuildTree();
 }
 
 void Insert(Query q, int a = 1, int b = N, Node *node = Tree)
@@ -62,6 +44,11 @@ void Insert(Query q, int a = 1, int b = N, Node *node = Tree)
     }
     else
     {
+        if ((node -> l) == nullptr)
+            node -> l = new Node();
+        if ((node -> r) == nullptr)
+            node -> r = new Node();
+        
         Insert(q, a, b / 2, node -> l);
         Insert(q, (b / 2) + 1, b, node -> l);
     }
@@ -71,10 +58,11 @@ ll Qr(Query q, Node *node = Tree, ll a = 1, ll b = N)
 {
     if (a == b)
     {
-        return node->val;
+        return node -> val;
     }
     else
     {
+        int mid = (a + b) / 2;
         return node->val + Qr(
                 q, 
                 (b / 2) <= q.num ? node -> l : node -> r, 
