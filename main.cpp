@@ -19,23 +19,17 @@ struct Query
     int type, x, y;
 };
 
-int N, M, lfs, min_v = -10010;
+int N, M, lfs, l, min_v = -10010;
+Node res;
 
 vector <Node> tree;
 
-void Update(int x, Node &parent, Node l, Node r, bool is_child = false)
+void Update(int x, Node &parent, Node l, Node r)
 {
-    if (is_child)
-    {
-        parent.pref = parent.suf = parent.psoms = parent.sum = x;
-    }
-    else
-    {
-        parent.psoms = max(max(l.psoms, r.psoms), l.suf + r.pref);
-        parent.suf = max(r.suf, r.sum + l.suf);
-        parent.pref = max(l.pref, l.sum + r.pref);
-        parent.sum = l.sum + r.sum;
-    }
+    parent.psoms = max(max(l.psoms, r.psoms), l.suf + r.pref);
+    parent.suf = max(r.suf, r.sum + l.suf);
+    parent.pref = max(l.pref, l.sum + r.pref);
+    parent.sum = l.sum + r.sum;
 }
 
 void Insert(int node, int x)
@@ -51,20 +45,21 @@ void Init()
 {
     cin >> N;
     lfs = (1 << int((log2(N)) + 1));
+    l = lfs - 1;
     tree.resize(2 * lfs);
-    for (int node = 0; node < N; ++node)
+    for (int node = 1; node <= N; ++node)
     {
         int x;
         cin >> x;
-        Update(x, tree[node + lfs], tree[node + lfs], tree[node + lfs], true);
-        Insert((node + lfs) / 2, x);
+        Node &v = tree[node + l];
+        v.sum = v.pref = v.suf = v.psoms = x;
+        Insert((node + l) / 2, x);
     }
     cin >> M;
 }
 
-Node Qr(Query q, int a = 1, int b = N, int node = 1)
+Node Qr(Query q, int a = 1, int b = lfs, int node = 1)
 {
-    static Node res;
     if (b < q.x || a > q.y)
     {
         return { min_v, 0, 0, 0 };
@@ -90,10 +85,13 @@ void Solve()
         switch (q.type)
         {
             case 0:
-                Insert(q.x, q.y + lfs - 1);
+                tree[q.x + l].sum = tree[q.x + l].pref = tree[q.x + l].suf = 
+                    tree[q.x + l].psoms = q.y;
+                Insert(q.y, (q.x + l) / 2);
                 break;
             
             case 1:
+                res = {min_v, 0, 0, 0};
                 cout << Qr(q).psoms << '\n';
                 break;
         }
