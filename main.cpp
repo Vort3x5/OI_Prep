@@ -24,7 +24,7 @@ Node res;
 
 vector <Node> tree;
 
-void Update(int x, Node &parent, Node l, Node r)
+void Update(Node &parent, Node l, Node r)
 {
     parent.psoms = max(max(l.psoms, r.psoms), l.suf + r.pref);
     parent.suf = max(r.suf, r.sum + l.suf);
@@ -32,11 +32,11 @@ void Update(int x, Node &parent, Node l, Node r)
     parent.sum = l.sum + r.sum;
 }
 
-void Insert(int node, int x)
+void Insert(int node)
 {
     while (node > 0)
     {
-        Update(x, tree[node], tree[node * 2], tree[(node * 2) + 1]);
+        Update(tree[node], tree[node * 2], tree[(node * 2) + 1]);
         node /= 2;
     }
 }
@@ -53,7 +53,7 @@ void Init()
         cin >> x;
         Node &v = tree[node + l];
         v.sum = v.pref = v.suf = v.psoms = x;
-        Insert((node + l) / 2, x);
+        Insert((node + l) / 2);
     }
     cin >> M;
 }
@@ -62,7 +62,7 @@ Node Qr(Query q, int a = 1, int b = lfs, int node = 1)
 {
     if (b < q.x || a > q.y)
     {
-        return { min_v, 0, 0, 0 };
+        return { min_v, min_v, min_v, min_v };
     }
     else if (a >= q.x && b <= q.y)
     {
@@ -71,7 +71,7 @@ Node Qr(Query q, int a = 1, int b = lfs, int node = 1)
     else
     {
         int mid = (a + b) / 2;
-        Update(0, res, Qr(q, a, mid, node * 2), Qr(q, mid + 1, b, (node * 2) + 1));
+        Update(res, Qr(q, a, mid, node * 2), Qr(q, mid + 1, b, (node * 2) + 1));
         return res;
     }
 }
@@ -87,7 +87,7 @@ void Solve()
             case 0:
                 tree[q.x + l].sum = tree[q.x + l].pref = tree[q.x + l].suf = 
                     tree[q.x + l].psoms = q.y;
-                Insert(q.y, (q.x + l) / 2);
+                Insert((q.x + l) / 2);
                 break;
             
             case 1:
