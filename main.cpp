@@ -14,7 +14,7 @@ struct Node
     ll val;
     Node *l, *r;
     
-    Node(ll a)
+    Node(ll a = 0)
         : val(a), l(nullptr), r(nullptr) {}
 };
 
@@ -25,7 +25,7 @@ struct Query
 };
 
 ll N, M;
-Node *Tree;
+Node *Tree = new Node();
 
 void Init()
 {
@@ -34,42 +34,46 @@ void Init()
 
 void Insert(Query q, int a = 1, int b = N, Node *node = Tree)
 {
-    if (b < q.num || a > N)
-    {
+    if (a == b)
         return;
-    }
-    else if (a >= q.num || b <= N)
-    {
+    else if (a >= q.num)
         ++(node -> val);
-    }
     else
     {
-        if ((node -> l) == nullptr)
-            node -> l = new Node();
-        if ((node -> r) == nullptr)
-            node -> r = new Node();
+        int mid = (a + b) / 2;
         
-        Insert(q, a, b / 2, node -> l);
-        Insert(q, (b / 2) + 1, b, node -> l);
+        if (!(node -> l))
+            (node -> l) = new Node(node -> val);
+        Insert(q, a, mid, node -> l);
+        
+        if (!(node -> r))
+            (node -> r) = new Node(node -> val);
+        Insert(q, mid + 1, b, node -> r);
     }
 }
+
+bool IsInRange(int a, int b, int v) 
+    { return (a <= v && v <= b); }
 
 ll Qr(Query q, Node *node = Tree, ll a = 1, ll b = N)
 {
     if (a == b)
+        return a + (node -> val);
+    
+    int mid = (a + b) / 2;
+    if (IsInRange(a, mid, q.num))
     {
-        return node -> val;
+        if (!(node -> l))
+            (node -> l) = new Node(node -> val);
+        return (node -> val) + Qr(q, node -> l, a, mid);
     }
-    else
+    else if (IsInRange(mid + 1, b, q.num))
     {
-        int mid = (a + b) / 2;
-        return node->val + Qr(
-                q, 
-                (b / 2) <= q.num ? node -> l : node -> r, 
-                (b / 2) <= q.num ? a : (b / 2) + 1,
-                (b / 2) <= q.num ? b / 2 : b
-                );
+        if (!(node -> r))
+            (node -> r) = new Node(node -> val);
+        return (node -> val) + Qr(q, node -> r, mid + 1, b);
     }
+    return 0;
 }
 
 void Solve()
