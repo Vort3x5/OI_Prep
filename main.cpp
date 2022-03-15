@@ -14,8 +14,8 @@ struct Node
     ll val;
     Node *l, *r;
     
-    Node(ll a = 0)
-        : val(a), l(nullptr), r(nullptr) {}
+    Node(ll v = 0)
+        : val(v), l(nullptr), r(nullptr) {}
 };
 
 struct Query
@@ -32,31 +32,37 @@ void Init()
     cin >> N >> M;
 }
 
+inline bool IsInRange(int a, int b, int v) 
+    { return (a <= v && v <= b); }
+
 void Insert(Query q, int a = 1, int b = N, Node *node = Tree)
 {
-    if (a == b)
+    if (b < q.num)
         return;
+
+    if (a == b)
+        ++(node -> val);
     else if (a >= q.num)
         ++(node -> val);
     else
     {
         int mid = (a + b) / 2;
-        
+
         if (!(node -> l))
             (node -> l) = new Node(node -> val);
         Insert(q, a, mid, node -> l);
-        
+
         if (!(node -> r))
             (node -> r) = new Node(node -> val);
         Insert(q, mid + 1, b, node -> r);
     }
 }
 
-bool IsInRange(int a, int b, int v) 
-    { return (a <= v && v <= b); }
-
 ll Qr(Query q, Node *node = Tree, ll a = 1, ll b = N)
 {
+    if (b < q.num)
+        return 0;
+
     if (a == b)
         return a + (node -> val);
     
