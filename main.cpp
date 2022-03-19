@@ -10,12 +10,12 @@ struct lf
     ll indx, val;
 };
 
-bool operator<(lf l, lf r)
-    { return (l.val != r.val ? l.val < r.val : l.indx < r.indx); }
+auto cmp = [](lf l, lf r)
+    { return (l.val != r.val ? l.val < r.val : l.indx < r.indx); };
 
 struct Node
 {
-    set <lf> lfs;
+    set <lf, decltype(cmp)> lfs{cmp};
 };
 
 struct Query
