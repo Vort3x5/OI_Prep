@@ -1,10 +1,9 @@
 #!/bin/bash
-g++ -std=c++11 ./wzor.cpp -o wzor
-g++ -std=c++11 ./gen.cpp -o gen
-g++ -std=c++11 ./brut.cpp -o brut
+g++ -std=c++17 ./K0.cpp -o wzor
+g++ -std=c++17 ./Brut.cpp -o brut
 for((j=1;;j++))
 do
-for i in ./tests/*.txt;
+for i in ./In/*.in;
   do
     echo $j
     ./wzor < $i > ./tests/wzor.out

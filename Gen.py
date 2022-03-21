@@ -65,16 +65,15 @@ def Write(tree, qs, N):
     i = 0
     while (i < N):
         Generate(tree, qs)
-        if (Are_Z0s(tree)):
-            with open("In/Inpts" + str(i) + ".in", "w+") as ins:
-                ins.write(str(n) + ' ' + str(q) + '\n')
-                for node in tree:
-                    ins.write(str(node) + ' ')
+        with open("In/Inpts" + str(i) + ".in", "w+") as ins:
+            ins.write(str(n) + ' ' + str(q) + '\n')
+            for node in tree:
+                ins.write(str(node) + ' ')
+            ins.write('\n')
+            for qr in qs:
+                for a in qr:
+                    ins.write(str(a) + ' ')
                 ins.write('\n')
-                for qr in qs:
-                    for a in qr:
-                        ins.write(str(a) + ' ')
-                    ins.write('\n')
-            i += 1
+        i += 1
 
 Write(tree, qs, int(sys.argv[1]))

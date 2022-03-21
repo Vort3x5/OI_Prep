@@ -15,26 +15,31 @@ int main(int argc, char *argv[])
 	for(int i = 1; i <= n ; i++)
 	{
         tb[i] = R(1, ma);
-        if(tb[i] % zero_per == 0)tb[i] = 0;
+        if(tb[i] % zero_per == 0)
+            tb[i] = 0;
 		printf("%lld\n", tb[i]);
 	}
 	while(q--)
 	{
         t = R(0,1);
-        if(t==0) {
+        if(!t) 
+        {
             a=R(1, n);
             tb[a] = R(1, ma);
-            if(tb[a] % zero_per == 0)tb[a] = 0;
+            if(tb[a] % zero_per == 0)
+                tb[a] = 0;
             printf("%d %d\n", a, tb[a]);
         }
-        else {
-            a=R(1, n);
-            b=R(a,n);
+        else 
+        {
+            a = R(1, n);
+            b = R(a,n);
             int il = 0;
             for(int i = a; i <= b; i++)
                 il += !tb[i];
            
-            if(il > 0)printf("%d %lld\n", a, b, R(1, il));
+            if(il > 0)
+                printf("%d %lld\n", a, b, R(1, il));
             else q++;
         }
 	}

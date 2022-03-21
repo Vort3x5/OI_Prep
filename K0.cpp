@@ -19,9 +19,7 @@ void Insert(int node, bool add)
 {
     node /= 2;
     if (node == 0)
-    {
         return;
-    }
     tree[node].val = add ? ++tree[node].val : --tree[node].val;
     Insert(node, add);
 }
@@ -64,9 +62,7 @@ int Query(int qr_a, int qr_b, int a = 1, int b = lfs, int node = 1)
 int Find(Qr qr, int node = 1)
 {
     if (node > l)
-    {
         return (node - l);
-    }
     else
     {
         qr.k -= ((tree[node * 2].val < qr.k) * tree[node * 2].val);
@@ -84,9 +80,7 @@ void Solve()
         {
             case 1:
                 if (tree[qr.a + l].val && qr.b)
-                {
                     continue;
-                }
                 Insert(qr.a, tree[qr.a + l].val);
                 tree[qr.a + l].val = !qr.b;
                 break;
