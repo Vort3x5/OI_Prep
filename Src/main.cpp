@@ -10,12 +10,11 @@ typedef pair <int, int> p_i;
 typedef vector <int> v_i;
 
 int n, m;
-bool start_found;
 
 struct Edge
 {
     vector <int> dests;
-    bool is_orph = true, bfsd = false;
+    int parents = 0;
 
 };
 
@@ -25,13 +24,13 @@ stack <int> roots;
 void Init()
 {
     cin >> n >> m;
-    graph.resize(m + 10);
+    graph.resize(n + 10);
     for (int v = 0; v < m; ++v)
     {
         int src, dest;
         cin >> src >> dest;
         graph[src].dests.push_back(dest);
-        graph[dest].is_orph = false;
+        ++graph[dest].parents;
     }
 }
 
@@ -44,22 +43,19 @@ void Bfs()
         cout << nodes.front() << ' ';
         for (auto &v : graph[nodes.front()].dests)
         {
-            if (!graph[v].bfsd)
-            {
+            if (graph[v].parents < 2)
                 nodes.push(v);
-                graph[v].bfsd = true;
-            }
-        }
-        nodes.pop();
+            else
+                --graph[v].parents;
+        } nodes.pop();
     }
-    cout << '\n';
 }
 
 void Solve()
 {
     for (int v = 1; v <= n; ++v)
     {
-        if (graph[v].is_orph)
+        if (!graph[v].parents)
             roots.push(v);
     }
 
@@ -71,6 +67,7 @@ void Solve()
         Bfs();
         roots.pop();
     }
+    cout << '\n';
 }
 
 int main()
