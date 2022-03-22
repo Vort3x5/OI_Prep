@@ -47,7 +47,8 @@ void Bfs()
                 nodes.push(v);
             else
                 --graph[v].parents;
-        } nodes.pop();
+        } 
+        nodes.pop();
     }
 }
 
@@ -59,7 +60,7 @@ void Solve()
             roots.push(v);
     }
 
-    if (roots.empty())
+    if (roots.empty()) // or a cycle is found
         cout << "IMPOSSIBLE\n";
 
     while (!roots.empty())
