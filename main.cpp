@@ -40,20 +40,18 @@ void Insert(Query q, int a = 1, int b = N, Node *node = Tree)
     if (b < q.num)
         return;
 
-    if (a == b)
-        ++(node -> val);
-    else if (a >= q.num)
+    if (a == b || a >= q.num)
         ++(node -> val);
     else
     {
         int mid = (a + b) / 2;
 
         if (!(node -> l))
-            (node -> l) = new Node(node -> val);
+            (node -> l) = new Node();
         Insert(q, a, mid, node -> l);
 
         if (!(node -> r))
-            (node -> r) = new Node(node -> val);
+            (node -> r) = new Node();
         Insert(q, mid + 1, b, node -> r);
     }
 }
@@ -70,13 +68,13 @@ ll Qr(Query q, Node *node = Tree, ll a = 1, ll b = N)
     if (IsInRange(a, mid, q.num))
     {
         if (!(node -> l))
-            (node -> l) = new Node(node -> val);
+            (node -> l) = new Node();
         return (node -> val) + Qr(q, node -> l, a, mid);
     }
     else if (IsInRange(mid + 1, b, q.num))
     {
         if (!(node -> r))
-            (node -> r) = new Node(node -> val);
+            (node -> r) = new Node();
         return (node -> val) + Qr(q, node -> r, mid + 1, b);
     }
     return 0;
