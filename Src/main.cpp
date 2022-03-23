@@ -15,7 +15,6 @@ struct Edge
 {
     vector <int> dests;
     int parents = 0;
-
 };
 
 vector <Edge> graph;
@@ -52,6 +51,27 @@ void Bfs()
     }
 }
 
+bool Dfs(int v, vector <bool> vis)
+{
+    if (vis[v])
+        return false;
+    vis[v] = true;
+    for (auto node : graph[v].dests)
+        return Dfs(node, vis);
+    return true;
+}
+
+bool IsCycle(stack <int> nodes)
+{
+    vector <bool> vis(n + 10);
+    while (!nodes.empty())
+    {
+        if (!Dfs(nodes.top(), vis))
+            return true;
+    }
+    return false;
+}
+
 void Solve()
 {
     for (int v = 1; v <= n; ++v)
@@ -60,7 +80,7 @@ void Solve()
             roots.push(v);
     }
 
-    if (roots.empty()) // or a cycle is found
+    if (roots.empty() || IsCycle(roots))
         cout << "IMPOSSIBLE\n";
 
     while (!roots.empty())
