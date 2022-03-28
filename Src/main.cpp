@@ -1,85 +1,67 @@
-#include <bits/stdc++.h>
+#include <cstdio>
+#include <vector>
+#include <algorithm>
 
-#define pb push_back
-#define pf push_front
+const int maxn=1000002;
 
-using namespace std;
+std::vector<int>v[maxn],top,g[maxn];
+int n,m,a,b,s,e,il=1;
+long long fi[maxn];
+bool odw[maxn], osiaga[maxn];
+int scc[maxn];
+long long sum[maxn];
+long long res[maxn];
+std::vector <int> gsc[maxn];
 
-typedef long long ll;
-typedef pair <int, int> p_i;
-typedef vector <int> v_i;
-
-int n, m;
-bool start_found;
-
-struct Edge
+void dfs(int x)
 {
-    vector <int> dests;
-    bool is_orph = true, bfsd = false;
-
-};
-
-vector <Edge> graph;
-stack <int> roots;
-
-void Init()
-{
-    cin >> n >> m;
-    graph.resize(m + 10);
-    for (int v = 0; v < m; ++v)
-    {
-        int src, dest;
-        cin >> src >> dest;
-        graph[src].dests.push_back(dest);
-        graph[dest].is_orph = false;
-    }
+    odw[x]=true;
+    for(int i : v[x])if(!odw[i])dfs(i);
+    top.push_back(x);
 }
 
-void Bfs()
+void ScDfs(int x, int i)
 {
-    queue <int> nodes;
-    nodes.push(roots.top());
-    while (!nodes.empty())
-    {
-        cout << nodes.front() << ' ';
-        for (auto &v : graph[nodes.front()].dests)
-        {
-            if (!graph[v].bfsd)
-            {
-                nodes.push(v);
-                graph[v].bfsd = true;
-            }
-        }
-        nodes.pop();
-    }
-    cout << '\n';
-}
-
-void Solve()
-{
-    for (int v = 1; v <= n; ++v)
-    {
-        if (graph[v].is_orph)
-            roots.push(v);
-    }
-
-    if (roots.empty())
-        cout << "IMPOSSIBLE\n";
-
-    while (!roots.empty())
-    {
-        Bfs();
-        roots.pop();
-    }
+    scc[x] = i, sum[i] += fi[x];
+    for (int node : g[x])
+        if (!scc[node])
+            ScDfs(node, i);
 }
 
 int main()
 {
-    ios_base::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    Init();
-    Solve();
-
-    return 0;
+    scanf("%d%d%d%d", &n, &m, &s, &e);
+    for(int i = 1; i <= n; i++)scanf("%lld", &fi[i]);
+    for(int i = 0; i < m; i++)
+    {
+        scanf("%d%d", &a, &b);
+        v[a].push_back(b);
+        g[b].push_back(a);
+    }
+    top.reserve(n);
+    for(int i = 1; i <= n; i++)if(!odw[i])dfs(i);
+    for (int i = top.size() - 1; i >= 0; --i)
+        if (!scc[top[i]])
+            ScDfs(top[i], il++);
+    for (int i = 1; i <= n; ++i)
+    {
+        for (int j : v[i])
+            if (scc[j] != scc[i])
+                gsc[scc[i]].push_back(scc[j]);
+    }
+    osiaga[scc[e]] = true;
+    for (int i = scc[e]; i >= scc[s]; --i)
+    {
+        long long maks = 0;
+        for (int j : gsc[i])
+        {
+            if (osiaga[j]) {
+                maks = std::max(maks, res[j]);
+                osiaga[i] = true;
+            }
+        }
+        if(osiaga[i])
+            res[i] = maks + sum[i];
+    }
+    printf("%lld", res[scc[s]]);
 }
