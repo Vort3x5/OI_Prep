@@ -44,9 +44,10 @@ void Init()
         root += !root * v;
         for (int j = 0; j < M; ++j)
         {
-            int q;
-            scanf("%d", &q);
+            int q, w;
+            scanf("%d%d", &q, &w);
             graph[v].dest.pb(q);
+            graph[q].weight[0] = w;
         }
     }
 }
@@ -72,7 +73,6 @@ void BuildTree()
 void Dfs(int v, int par = 1)
 {
     graph[v].parent[0] = par;
-    // graph[v].weight[0] = graph[v].w;
     for (int i = 1; i < 20; ++i)
     {
         graph[v].parent[i] = graph[graph[v].parent[i - 1]].parent[i - 1];
