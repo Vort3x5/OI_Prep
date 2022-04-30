@@ -15,7 +15,7 @@ struct Edge
     vector <int> dest;
     bool vis;
     int dfs_vis;
-    int sub_tree_count;
+    int sub_tree_count = 1;
 };
 
 int n, k, curr;
@@ -52,7 +52,10 @@ int FindCentroid(int node)
     for (auto &v : graph[node].dest)
     {
         if (graph[v].dfs_vis != curr && (graph[v].stc > (graph[node].stc / 2)))
-            return FindCentroid(v);
+        {
+            graph[node].stc -= graph[v].stc;
+            graph[v].stc += graph[node].stc;
+        }
     }
     return node;
 }
