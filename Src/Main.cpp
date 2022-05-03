@@ -14,6 +14,7 @@ struct Edge
 {
     vector <int> dest;
     bool vis;
+    bool destroyed = false;
     int dfs_vis;
     int sub_tree_count = 1;
 };
@@ -60,8 +61,20 @@ int FindCentroid(int node)
     return node;
 }
 
+int Centroid(int v)
+{
+    Dfs(v);
+    ++curr;
+    int centroid = FindCentroid(v);
+    graph[centroid].destroyed = true;
+    for (int i = 0; i < graph[centroid].dest.size(); ++i)
+    {
+        if (!graph[graph[centroid].dest[i]].destroyed);
+    }
+}
+
 void Solve()
-{ 
+{
 }
 
 int main()
