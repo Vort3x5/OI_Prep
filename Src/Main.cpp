@@ -2,7 +2,6 @@
 
 #define pb push_back
 #define pf push_front
-#define stc sub_tree_count
 
 using namespace std;
 
@@ -12,116 +11,34 @@ typedef vector <int> v_i;
 
 struct Edge
 {
-    vector <int> dest;
-    bool destroyed = false;
-    int dfs_vis;
-    int sub_tree_count = 1;
+    vector <int> deston;
+    vector <bool> dist;
 };
 
-int n, k, curr;
+int n, m;
 
 vector <Edge> graph;
-v_i res;
-v_i sres;
 
 void Init()
 {
-    scanf("%d%d", &n, &k);
+    scanf("%d%d", &n, &m);
     graph.resize(n + 10);
-    res.resize(n + 10);
-    for (int i = 0; i < (n - 1); ++i)
+    for (int i = 0; i < n; ++i)
     {
-        int v, u;
-        scanf("%d%d", &v, &u);
-        graph[v].dest.pb(u);
-        graph[u].dest.pb(v);
-    }
-}
+        char fst, snd;
+        int p, q;
+        scanf("%c%d%c%d", &fst, &p, &snd, &q);
 
-void Dfs(int node, int dist = 0)
-{
-    ++res[dist];
-    graph[node].dfs_vis = curr;
-    for (auto &v : graph[node].dest)
-    {
-        if (graph[v].dfs_vis != curr)
-            Dfs(v, dist + 1);
-    }
-}
+        graph[p].deston.pb(q);
+        graph[p].dist.pb(fst == '+');
 
-void sDfs(int node, int dist = 1)
-{
-    --res[dist];
-    ++sres[dist];
-    graph[node].dfs_vis = curr;
-    for (auto &v : graph[node].dest)
-    {
-        if (graph[v].dfs_vis != curr)
-            Dfs(v, dist + 1);
+        graph[q].deston.pb(p);
+        graph[q].dist.pb(snd == '+');
     }
-}
-
-int CentroidDfs(int node)
-{
-    graph[node].stc = 1;
-    graph[node].dfs_vis = curr;
-    for (auto &v : graph[node].dest)
-    {
-        if (graph[v].dfs_vis != curr && !graph[v].destroyed)
-            graph[v].stc += CentroidDfs(v);
-    }
-    return graph[node].stc;
-}
-
-int FindCentroid(int node)
-{
-    for (auto &v : graph[node].dest)
-    {
-        if (graph[v].dfs_vis != curr && (graph[v].stc > (graph[node].stc / 2)))
-        {
-            graph[node].stc -= graph[v].stc;
-            graph[v].stc += graph[node].stc;
-        }
-    }
-    return node;
-}
-
-int CentroidDecomposition(int v)
-{
-    CentroidDfs(v);
-    ++curr;
-    int centroid = FindCentroid(v);
-    int r = 0;
-    graph[centroid].destroyed = true;
-    Dfs(centroid);
-    ++curr;
-    for (int i = 0; i < graph[centroid].dest.size(); ++i)
-    {
-        if (!graph[graph[centroid].dest[i]].destroyed)
-        {
-            sDfs(graph[centroid].dest[i]);
-            for (int i = 1; i <= k; ++i)
-            {
-                if (!sres[i])
-                    break;
-                r += sres[i] * res[k - i];
-                sres[i] = 0;
-            }
-        }
-    }
-    res[0] = 0;
-    ++curr;
-    for (int i = 0; i < graph[centroid].dest.size(); ++i)
-    {
-        if (!graph[graph[centroid].dest[i]].destroyed)
-            r += CentroidDecomposition(graph[centroid].dest[i]);
-    }
-    return r;
 }
 
 void Solve()
 {
-    printf("%d", CentroidDecomposition(1));
 }
 
 int main()

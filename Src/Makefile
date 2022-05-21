@@ -1,8 +1,8 @@
-out: PDOT.o
-	g++ PDOT.o -o out
+out: Main.o
+	g++ Main.o -o out
 
-PDOT.o: PDOT.cpp
-	g++ -g -c -std=c++17 PDOT.cpp
+Main.o: Main.cpp
+	g++ -g -c -std=c++17 Main.cpp
 
 clean:
 	rm *.o out
