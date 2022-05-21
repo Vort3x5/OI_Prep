@@ -13,7 +13,6 @@ typedef vector <int> v_i;
 struct Edge
 {
     vector <int> dest;
-    bool vis;
     bool destroyed = false;
     int dfs_vis;
     int sub_tree_count = 1;
@@ -23,6 +22,7 @@ int n, k, curr;
 
 vector <Edge> graph;
 v_i res;
+v_i sres;
 
 void Init()
 {
@@ -49,13 +49,25 @@ void Dfs(int node, int dist = 0)
     }
 }
 
-int CentroidDfs(int node)
+void sDfs(int node, int dist = 1)
 {
+    --res[dist];
+    ++sres[dist];
     graph[node].dfs_vis = curr;
-    graph[node].vis = true;
     for (auto &v : graph[node].dest)
     {
-        if (graph[v].dfs_vis != curr && !graph[v].vis)
+        if (graph[v].dfs_vis != curr)
+            Dfs(v, dist + 1);
+    }
+}
+
+int CentroidDfs(int node)
+{
+    graph[node].stc = 1;
+    graph[node].dfs_vis = curr;
+    for (auto &v : graph[node].dest)
+    {
+        if (graph[v].dfs_vis != curr && !graph[v].destroyed)
             graph[v].stc += CentroidDfs(v);
     }
     return graph[node].stc;
@@ -74,18 +86,37 @@ int FindCentroid(int node)
     return node;
 }
 
-int CentroidDecomposition(int v, int val = k)
+int CentroidDecomposition(int v)
 {
     CentroidDfs(v);
     ++curr;
     int centroid = FindCentroid(v);
+    int r = 0;
     graph[centroid].destroyed = true;
+    Dfs(centroid);
+    ++curr;
     for (int i = 0; i < graph[centroid].dest.size(); ++i)
     {
         if (!graph[graph[centroid].dest[i]].destroyed)
-            return CentroidDecomposition(graph[centroid].dest[i]);
+        {
+            sDfs(graph[centroid].dest[i]);
+            for (int i = 1; i <= k; ++i)
+            {
+                if (!sres[i])
+                    break;
+                r += sres[i] * res[k - i];
+                sres[i] = 0;
+            }
+        }
     }
-    return res[k];
+    res[0] = 0;
+    ++curr;
+    for (int i = 0; i < graph[centroid].dest.size(); ++i)
+    {
+        if (!graph[graph[centroid].dest[i]].destroyed)
+            r += CentroidDecomposition(graph[centroid].dest[i]);
+    }
+    return r;
 }
 
 void Solve()
