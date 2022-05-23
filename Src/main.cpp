@@ -1,4 +1,4 @@
-#include "../../pch.h"
+#include <bits/stdc++.h>
 
 #define pb push_back
 #define pf push_front
