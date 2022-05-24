@@ -25,15 +25,30 @@ void Init()
     graph.resize(n + 10);
     for (int i = 0; i < n; ++i)
     {
-        char fst, snd;
+        char fst[3], snd[3];
         int p, q;
-        scanf("%c%d%c%d", &fst, &p, &snd, &q);
+        scanf("%s%d%s%d", fst, &p, snd, &q);
 
-        graph[p].deston.pb(q);
-        graph[p].dist.pb(fst == '+');
-
-        graph[q].deston.pb(p);
-        graph[q].dist.pb(snd == '+');
+        if (fst[0] == '+' && snd[0] == '+')
+        {
+            graph[n + p].deston.pb(q);
+            graph[n + q].dist.pb(p);
+        }
+        else if (fst[0] == '+' && snd[0] == '-')
+        {
+            graph[n + p].deston.pb(n + q);
+            graph[q].dist.pb(p);
+        }
+        else if (fst[0] == '-' && snd[0] == '+')
+        {
+            graph[p].deston.pb(q);
+            graph[n + q].dist.pb(n + p);
+        }
+        else if (fst[0] == '-' && snd[0] == '-')
+        {
+            graph[p].deston.pb(n + q);
+            graph[q].dist.pb(n + p);
+        }
     }
 }
 
