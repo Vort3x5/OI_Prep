@@ -65,6 +65,8 @@ int SccDfs(int v)
     for (auto node : scc_g[v])
         if (graph[node].scc_vis)
             res[v] += SccDfs(node);
+        else
+            res[v] += res[node];
     return res[v];
 }
 
@@ -89,7 +91,7 @@ void Solve()
         ++res[scc[v]];
     for (int v = 1; v <= n; ++v)
         if (graph[scc[v]].scc_vis)
-            res[v] = SccDfs(scc[v]);
+            res[scc[v]] = SccDfs(scc[v]);
     for (int v = 1; v <= n; ++v)
         printf("%d\n", res[scc[v]] - 1);
 }
