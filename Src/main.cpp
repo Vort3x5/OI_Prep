@@ -22,7 +22,6 @@ vector <vector <int>> rev_g;
 vector <vector <int>> scc_g;
 stack <int> topo_sort;
 vector <int> scc;
-vector <int> sum;
 vector <int> res;
 
 void Init()
@@ -32,7 +31,6 @@ void Init()
     rev_g.resize(n + 10);
     scc_g.resize(n + 10);
     scc.resize(n + 10);
-    sum.resize(n + 10);
     res.resize(n + 10);
     for (int e = 0; e < m; ++e)
     {
@@ -61,11 +59,13 @@ void SccInitDfs(int v, int i)
             SccInitDfs(node, i);
 }
 
-int SccDfs(int v = 1)
+int SccDfs(int v)
 {
+    graph[v].scc_vis = false;
     for (auto node : scc_g[v])
-        res[v] += SccDfs(node);
-    return sum[scc[v]];
+        if (graph[node].scc_vis)
+            res[v] += SccDfs(node);
+    return res[v];
 }
 
 void Solve()
@@ -86,11 +86,12 @@ void Solve()
                 scc_g[scc[v]].pb(scc[node]);
     }
     for (int v = 1; v <= n; ++v)
-        ++sum[scc[v]];
-    SccDfs();
-
+        ++res[scc[v]];
     for (int v = 1; v <= n; ++v)
-        printf("%d\n", res[scc[v]]);
+        if (graph[scc[v]].scc_vis)
+            res[v] = SccDfs(scc[v]);
+    for (int v = 1; v <= n; ++v)
+        printf("%d\n", res[scc[v]] - 1);
 }
 
 int main()
