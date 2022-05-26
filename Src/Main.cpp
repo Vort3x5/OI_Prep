@@ -73,7 +73,8 @@ void TopoSort(int v)
 {
     graph[v].vis = true;
     for (auto node : graph[v].deston)
-        TopoSort(node);
+        if (!graph[node].vis)
+            TopoSort(node);
     topo_sort.push(v);
 }
 
