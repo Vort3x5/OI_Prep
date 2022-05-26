@@ -21,21 +21,18 @@ vector <Edge> graph;
 vector <vector <int>> rev_g;
 stack <int> topo_sort;
 vector <int> scc;
-bitset <100010> given;
 
 void Init()
 {
     scanf("%d%d", &n, &m);
-    graph.resize(m * 2);
-    rev_g.resize(m * 2);
-    scc.resize(m * 2);
+    graph.resize((m * 2) + 10);
+    rev_g.resize((m * 2) + 10);
+    scc.resize((m * 2) + 10);
     for (int i = 0; i < n; ++i)
     {
         char fst[3], snd[3];
         int p, q;
         scanf("%s%d%s%d", fst, &p, snd, &q);
-        given[p] = true;
-        given[q] = false;
 
         if (fst[0] == '+' && snd[0] == '+')
         {
@@ -91,7 +88,7 @@ void InitScc(int v, int i)
 
 void Solve()
 {
-    for (int v = 1; v <= m; ++v)
+    for (int v = 1; v <= (m * 2); ++v)
         if (!graph[v].vis)
             TopoSort(v);
     for (int i = 1; !topo_sort.empty();)
@@ -102,7 +99,7 @@ void Solve()
     }
     for (int v = 1; v <= m; ++v)
     {
-        if (given[v] && scc[v] == scc[v + m])
+        if (scc[v] == scc[v + m])
         {
             printf("IMPOSSIBLE\n");
             return;
@@ -110,7 +107,7 @@ void Solve()
     }
     for (int v = 1; v <= m; ++v)
     {
-        if (!given[v] || (scc[v] && scc[v + m]))
+        if (scc[v] < scc[v + m])
             printf("- ");
         else
             printf("+ ");
