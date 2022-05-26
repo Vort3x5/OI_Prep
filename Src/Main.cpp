@@ -12,17 +12,23 @@ typedef vector <int> v_i;
 struct Edge
 {
     vector <int> deston;
-    vector <bool> dist;
+    bool vis;
+    // vector <bool> dist;
 };
 
 int n, m;
 
 vector <Edge> graph;
+vector <vector <int>> rev_g;
+stack <int> topo_sort;
+vector <int> scc;
 
 void Init()
 {
     scanf("%d%d", &n, &m);
-    graph.resize(n + 10);
+    graph.resize(m * 2);
+    rev_g.resize(m * 2);
+    scc.resize(m * 2);
     for (int i = 0; i < n; ++i)
     {
         char fst[3], snd[3];
@@ -31,29 +37,67 @@ void Init()
 
         if (fst[0] == '+' && snd[0] == '+')
         {
-            graph[n + p].deston.pb(q);
-            graph[n + q].dist.pb(p);
+            graph[m + p].deston.pb(q);
+            graph[m + q].deston.pb(p);
+
+            rev_g[q].pb(m + p);
+            rev_g[p].pb(m + q);
         }
         else if (fst[0] == '+' && snd[0] == '-')
         {
-            graph[n + p].deston.pb(n + q);
-            graph[q].dist.pb(p);
+            graph[m + p].deston.pb(m + q);
+            graph[q].deston.pb(p);
+            
+            rev_g[m + q].pb(m + p);
+            rev_g[p].pb(q);
         }
         else if (fst[0] == '-' && snd[0] == '+')
         {
             graph[p].deston.pb(q);
-            graph[n + q].dist.pb(n + p);
+            graph[m + q].deston.pb(m + p);
+            
+            rev_g[q].pb(p);
+            rev_g[m + p].pb(m + q);
         }
         else if (fst[0] == '-' && snd[0] == '-')
         {
-            graph[p].deston.pb(n + q);
-            graph[q].dist.pb(n + p);
+            graph[p].deston.pb(m + q);
+            graph[q].deston.pb(m + p);
+            
+            rev_g[m + q].pb(p);
+            rev_g[m + p].pb(q);
         }
     }
 }
 
+void TopoSort(int v)
+{
+    graph[v].vis = true;
+    for (auto node : graph[v].deston)
+        TopoSort(node);
+    topo_sort.push(v);
+}
+
+void InitSccDfs(int v, int i)
+{
+    graph[v].vis = false;
+    scc[v] = i;
+    for (auto node : rev_g[v])
+        if (graph[node].vis)
+            InitSccDfs(node, i);
+}
+
 void Solve()
 {
+    for (int v = 1; v <= m; ++v)
+        if (!graph[v].vis)
+            TopoSort(v);
+    for (int i = 1; !topo_sort.empty();)
+    {
+        if (graph[topo_sort.top()].vis)
+            InitSccDfs(topo_sort.top(), i++);
+        topo_sort.pop();
+    }
 }
 
 int main()
