@@ -13,7 +13,6 @@ struct Edge
 {
     vector <int> deston;
     bool vis;
-    // vector <bool> dist;
 };
 
 int n, m;
@@ -22,6 +21,7 @@ vector <Edge> graph;
 vector <vector <int>> rev_g;
 stack <int> topo_sort;
 vector <int> scc;
+bitset <100010> given;
 
 void Init()
 {
@@ -34,6 +34,8 @@ void Init()
         char fst[3], snd[3];
         int p, q;
         scanf("%s%d%s%d", fst, &p, snd, &q);
+        given[p] = true;
+        given[q] = false;
 
         if (fst[0] == '+' && snd[0] == '+')
         {
@@ -78,13 +80,13 @@ void TopoSort(int v)
     topo_sort.push(v);
 }
 
-void InitSccDfs(int v, int i)
+void InitScc(int v, int i)
 {
     graph[v].vis = false;
     scc[v] = i;
     for (auto node : rev_g[v])
         if (graph[node].vis)
-            InitSccDfs(node, i);
+            InitScc(node, i);
 }
 
 void Solve()
@@ -95,9 +97,25 @@ void Solve()
     for (int i = 1; !topo_sort.empty();)
     {
         if (graph[topo_sort.top()].vis)
-            InitSccDfs(topo_sort.top(), i++);
+            InitScc(topo_sort.top(), i++);
         topo_sort.pop();
     }
+    for (int v = 1; v <= m; ++v)
+    {
+        if (given[v] && scc[v] == scc[v + m])
+        {
+            printf("IMPOSSIBLE\n");
+            return;
+        }
+    }
+    for (int v = 1; v <= m; ++v)
+    {
+        if (!given[v] || (scc[v] && scc[v + m]))
+            printf("- ");
+        else
+            printf("+ ");
+    }
+    printf("\n");
 }
 
 int main()
