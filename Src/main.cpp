@@ -1,4 +1,4 @@
-#include "../../pch.h"
+#include <bits/stdc++.h>
 
 #define pb push_back
 #define pf push_front
@@ -23,7 +23,7 @@ struct Node
 int t, N, Q, lfs, l, root, mx_val = 1010;
 
 vector <Edge> graph;
-vector <int> found;
+deque <int> found;
 vector <Node> tree;
 
 void Init()
@@ -31,6 +31,7 @@ void Init()
     scanf("%d", &N);
     graph.resize(N + 10);
     graph.clear();
+    found.resize(0);
     found.clear();
     tree.clear();
     for (int v = 1; v <= N; ++v)
@@ -50,6 +51,7 @@ void Init()
 void Insert(int node, int v)
 {
     tree[v].val = node;
+    v /= 2;
     while(v)
     {
         tree[v].val = min(tree[v * 2].val, tree[(v * 2) + 1].val);
@@ -61,14 +63,15 @@ void BuildTree()
 {
     lfs = 1 << int(log2(found.size()) + 1);
     l = lfs - 1;
-    for (int v = 1; v <= found.size(); ++v)
-        Insert(found[v], v + l);
+    tree.resize(lfs * 2);
+    for (int v = 0; v < found.size(); ++v)
+        Insert(found[v], v + lfs);
 }
 
 void Dfs(int v, int i = 1)
 {
-    found.pb(graph[v].pos);
     graph[v].pos += !graph[v].pos * i;
+    found.pb(graph[v].pos);
     for (auto node : graph[v].childern)
     {
         Dfs(node, ++i);
@@ -99,6 +102,7 @@ void Solve()
         Init();
         scanf("%d", &Q);
         Dfs(root);
+        BuildTree();
         printf("Case %d:\n", i);
         for (int i = 0; i < Q; ++i)
         {
