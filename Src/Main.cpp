@@ -18,7 +18,7 @@ struct Edge
     int sub_tree_count = 1;
 };
 
-int n, k, curr;
+int n, k, curr = 1;
 
 vector <Edge> graph;
 v_i res;
@@ -29,6 +29,7 @@ void Init()
     scanf("%d%d", &n, &k);
     graph.resize(n + 10);
     res.resize(n + 10);
+    sres.resize(n + 10);
     for (int i = 0; i < (n - 1); ++i)
     {
         int v, u;
@@ -61,16 +62,15 @@ void sDfs(int node, int dist = 1)
     }
 }
 
-int CentroidDfs(int node)
+int CentroidDfs(int v)
 {
-    graph[node].stc = 1;
-    graph[node].dfs_vis = curr;
-    for (auto &v : graph[node].dest)
+    graph[v].dfs_vis = curr;
+    for (auto node : graph[v].dest)
     {
-        if (graph[v].dfs_vis != curr && !graph[v].destroyed)
-            graph[v].stc += CentroidDfs(v);
+        if (graph[node].dfs_vis != curr && !graph[node].destroyed)
+            graph[v].stc += CentroidDfs(node);
     }
-    return graph[node].stc;
+    return graph[v].stc;
 }
 
 int FindCentroid(int node)
