@@ -11,7 +11,7 @@ typedef vector <int> v_i;
 
 struct Edge
 {
-    vector <int> deston;
+    v_i deston, id;
     int in, out;
     bool vis;
 };
@@ -21,16 +21,18 @@ int n, m;
 vector <Edge> graph;
 deque <int> eul_path;
 stack <int> start;
+bitset <2000010> e_vis;
 
 void Init()
 {
     scanf("%d%d", &n, &m);
     graph.resize(n + 10);
-    for (int i = 0; i < m; ++i)
+    for (int i = 1; i <= m; ++i)
     {
         int v, u;
         scanf("%d%d", &v, &u);
         graph[v].deston.pb(u);
+        graph[v].id.pb(i);
     }
 }
 
