@@ -16,11 +16,10 @@ struct Edge
     bool vis;
 };
 
-int n, m;
+int n, m, start, s_end;
 
 vector <Edge> graph;
 deque <int> eul_path;
-stack <int> start;
 bitset <2000010> e_vis;
 
 void Init()
@@ -50,16 +49,26 @@ void CountDegrees(int v)
 
 void FindEulPath(int v)
 {
-    graph[v].vis = false;
-    for (int node = 0; node < graph[v].deston.size(); ++node)
+    for (int node = 0; node < graph[v].id.size(); ++node)
     {
-        if (graph[graph[v].deston[node]].vis)
+        if (!e_vis[graph[v].id[node]])
         {
-            --graph[v].out;
+            e_vis[graph[v].id[node]] = true;
             FindEulPath(graph[v].deston[node]);
         }
     }
     eul_path.push_front(v);
+}
+
+bool WereVisited()
+{
+    for (int v = 1; v <= n; ++v)
+    {
+        for (auto edge : graph[v].id)
+            if (!e_vis[edge])
+                return false;
+    }
+    return true;
 }
 
 void Solve()
@@ -67,22 +76,58 @@ void Solve()
     for (int v = 1; v <= n; ++v)
         if (!graph[v].vis)
             CountDegrees(v);
-    for (int v = 1; v < n; ++v)
+    
+    bool cycle = true;
+    for (int v = 1; v <= n; ++v)
     {
-        if ((graph[v].out - graph[v].in) == 1)
-            start.push(v);
-    }
-    while (!start.empty())
-    {
-        if (graph[start.top()].vis)
-            FindEulPath(start.top());
-        else
+        switch (graph[v].out - graph[v].in)
         {
-            printf("IMPOSSIBLE\n");
-            return;
+            case 0:
+                break;
+
+            case 1:
+                cycle = false;
+                if (!start)
+                    start = v;
+                else
+                {
+                    printf("IMPOSSIBLE\n");
+                    return;
+                }
+                break;
+            
+            case -1:
+                cycle = false;
+                if (!s_end)
+                    s_end = v;
+                else
+                {
+                    printf("IMPOSSIBLE\n");
+                    return;
+                }
+                break;
+            
+            default:
+                cycle = false;
+                break;
         }
-        start.pop();
     }
+    if (!cycle && (!start || !s_end))
+    {
+        printf("IMPOSSIBLE\n");
+        return;
+    }
+
+    if (cycle)
+        start = 1;
+    FindEulPath(start);
+    
+    if (!WereVisited() || eul_path.back() != n)
+    {
+        printf("IMPOSSIBLE\n");
+        return;
+    }
+    
     for (auto res : eul_path)
         printf("%d ", res);
     printf("\n");
