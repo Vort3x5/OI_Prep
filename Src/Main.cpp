@@ -19,6 +19,7 @@ struct Edge
 int n, m, start, s_end;
 
 vector <Edge> graph;
+vector <int> akt;
 deque <int> eul_path;
 bitset <2000010> e_vis;
 
@@ -26,6 +27,7 @@ void Init()
 {
     scanf("%d%d", &n, &m);
     graph.resize(n + 10);
+    akt.resize(n + 10);
     for (int i = 1; i <= m; ++i)
     {
         int v, u;
@@ -49,8 +51,10 @@ void CountDegrees(int v)
 
 void FindEulPath(int v)
 {
-    for (int node = 0; node < graph[v].id.size(); ++node)
+    while (akt[v] < graph[v].id.size())
     {
+        int node = akt[v];
+        ++akt[v];
         if (!e_vis[graph[v].id[node]])
         {
             e_vis[graph[v].id[node]] = true;
