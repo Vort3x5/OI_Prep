@@ -44,7 +44,7 @@ void Insert(int x, int v)
 {
     tree[v] = x;
     while (v /= 2)
-        tree[v] = tree[v * 2] + tree[(v * 2) + 1];
+        tree[v] = max(tree[v * 2], tree[(v * 2) + 1]);
 }
 
 int Query(int q_a, int q_b, int t_a = 1, int t_b = lfs, int v = 1)
@@ -58,6 +58,60 @@ int Query(int q_a, int q_b, int t_a = 1, int t_b = lfs, int v = 1)
         int mid = (t_a + t_b) / 2;
         return max(Query(q_a, q_b, t_a, mid, v * 2), Query(q_a, q_b, mid + 1, t_b, (v * 2) + 1));
     }
+}
+
+int Dfs(int v, int p, int w, int d = 1)
+{
+    graph[v].vis = true;
+    graph[v].deep = d;
+    graph[v].parent = p;
+    graph[v].w = w;
+    for (int node = 0; node < graph[v].deston.size(); ++node)
+    {
+        if (!graph[graph[v].deston[node]].vis)
+            graph[v].stc += Dfs(graph[v].deston[node], v, graph[v].dist[node], d + 1);
+    }
+    for (int node : graph[v].deston)
+    {
+        if (node != p)
+        {
+            if (graph[v].heavy == -1 || graph[graph[v].heavy].stc <= graph[node].stc)
+                graph[v].heavy = node;
+            else
+                graph[v].heavy = graph[v].heavy;
+        }
+    }
+    return graph[v].stc;
+}
+
+void Decompose(int h, int v)
+{
+    graph[v].pos = pos++;
+    Insert(pos + l - 1, graph[v].w);
+    graph[v].head = h;
+    if (graph[v].heavy == -1)
+        return;
+    Decompose(h, graph[v].heavy);
+    for (int node : graph[v].deston)
+    {
+        if (node != graph[v].heavy && node != graph[v].parent)
+            Decompose(node, node);
+    }
+}
+
+int HldQr(int a, int b)
+{
+    int res = 0;
+    while (graph[a].head != graph[b].head)
+    {
+        if (graph[graph[a].head].deep < graph[graph[b].head].deep)
+            swap(a, b);
+        res += Query(graph[graph[a].head].pos, graph[a].pos);
+        a = graph[graph[a].head].parent;
+    }
+    if (a != b)
+        res += Query(graph[a].pos < graph[b].pos ? graph[a].pos : graph[b].pos, graph[a].pos > graph[b].pos ? graph[a].pos - 1 : graph[b].pos - 1);
+    return res;
 }
 
 void Solve()
