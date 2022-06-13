@@ -1,1 +1,1 @@
-./out < Test_Input.in
+./out < Test_Input$1.in
