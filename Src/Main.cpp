@@ -28,18 +28,16 @@ void Init()
 
 void Insert(v_ll &tree, int v, ll x)
 {
+    tree[v] = x;
     while (v /= 2)
-    {
         tree[v] = max(tree[v * 2], tree[(v * 2) + 1]);
-        v /= 2;
-    }
 }
 
 ll Query(v_ll &tree, int q_a, int q_b, int v = 1, int t_a = 1, int t_b = lfs)
 {
-    if (q_a > t_b || q_b < t_a)
+    if (t_a > q_b || t_b < q_a)
         return 0;
-    else if (q_a >= t_a && q_b <= t_b)
+    else if (t_a >= q_a && t_b <= q_b)
         return tree[v];
     else
     {
@@ -50,11 +48,11 @@ ll Query(v_ll &tree, int q_a, int q_b, int v = 1, int t_a = 1, int t_b = lfs)
 
 void Solve()
 {
-    for (int node = 1; node <= n; ++node)
-        Insert(inc_tree, node + l, -1);
+    for (int node = 0; node < n; ++node)
+        Insert(inc_tree, arr[node] + l, Query(inc_tree, 1, arr[node] - 1) + 1);
 
-    for (int node = n; node > 0; --node)
-        Insert(dec_tree, node + l, -1);
+    for (int node = n - 1; node >= 0; --node)
+        Insert(dec_tree, arr[node] + l, Query(dec_tree, 1, arr[node] - 1) + 1);
 }
 
 int main()
