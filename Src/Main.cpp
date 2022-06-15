@@ -53,7 +53,6 @@ void Solve()
 
     for (int node = n - 1; node >= 0; --node)
         Insert(dec_tree, arr[node] + l, Query(dec_tree, 1, arr[node] - 1) + 1);
-    for (int i = 0; i < n; ++i);
 }
 
 int main()
