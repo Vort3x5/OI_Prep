@@ -19,7 +19,7 @@ struct Node
 {
     vector <Edge> deston;
     bool vis;
-    int deep;
+    int deep, low;
 };
 
 int n, m, src, dest;
@@ -43,21 +43,10 @@ void Init()
     scanf("%d%d", &src, &dest);
 }
 
-void CountDeep(int v = 1, int d = 1)
-{
-    dfs_g[v].vis = false;
-    dfs_g[v].deep = d;
-    for (auto node : dfs_g[v].deston)
-    {
-        if (dfs_g[node.dest].vis)
-            CountDeep(node.dest, d + 1);
-    }
-}
-
 void BuildDfsTree(int v = 1)
 {
     graph[v].vis = true;
-    for (auto node : graph[v].deston)
+    for (Edge node : graph[v].deston)
     {
         if (!graph[node.dest].vis)
         {
@@ -66,6 +55,33 @@ void BuildDfsTree(int v = 1)
         }
         else
             dfs_g[node.dest].deston.pb({v, graph[v].deston[node.dest].tres});
+    }
+}
+
+void CountDeep(int v = 1, int d = 1)
+{
+    dfs_g[v].vis = true;
+    dfs_g[v].deep = d;
+    for (Edge node : dfs_g[v].deston)
+    {
+        if (!dfs_g[node.dest].vis)
+            CountDeep(node.dest, d + 1);
+    }
+}
+
+void CountLow(int v)
+{
+    dfs_g[v].vis = false;
+    dfs_g[v].low = dfs_g[v].deep;
+
+    for (Edge node : dfs_g[v].deston)
+    {
+        if (dfs_g[node.dest].vis)
+        {
+            dfs_g[node.dest].deep = dfs_g[v].deep + 1;
+            CountLow(node.dest);
+            dfs_g[v].low = min(dfs_g[v].low, dfs_g[node.dest].low);
+        }
     }
 }
 
