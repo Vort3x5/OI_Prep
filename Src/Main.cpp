@@ -10,13 +10,13 @@ typedef pair <int, int> p_i;
 typedef vector <int> v_i;
 typedef vector <ll> v_ll;
 
-int n, l, lfs, res;
+ll n, l, lfs, res;
 
 v_ll arr, inc_tree, dec_tree;
 
 void Init()
 {
-    scanf("%d", &n);
+    scanf("%lld", &n);
     lfs = 1 << int(log2(n - 1) + 1);
     l = lfs - 1;
     arr.resize(n + 10);
@@ -54,8 +54,8 @@ void Solve()
         Insert(dec_tree, arr[node] + l, Query(dec_tree, 1, arr[node] - 1) + 1);
 
     for (int node = 1; node <= n; ++node)
-        res = max(Query(inc_tree, 1, node), Query(dec_tree, node, lfs));
-    printf("%d\n", n - res);
+        res = max(res, Query(inc_tree, 1, node) + Query(dec_tree, node + 1, lfs));
+    printf("%lld\n", n - res);
 }
 
 int main()
