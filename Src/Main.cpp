@@ -9,108 +9,78 @@ typedef long long ll;
 typedef pair <int, int> p_i;
 typedef vector <int> v_i;
 
+#define stc sub_tree_count
+
 struct Edge
 {
-    v_i deston, dist;
-    int deep, parent, pos, head, w, stc = 1, heavy = -1;
-    bool vis;
+    vector <p_i> dest;
 };
 
-int t, N, lfs, l, pos;
+int t, N, curr_pos, res;
 
 vector <Edge> graph;
-vector <int> tree;
+v_i parent, depth, heavy, head, pos;
 
 void Init()
 {
     scanf("%d", &N);
     graph.resize(N + 10);
-    lfs = 1 << int(log2(N - 1) + 1);
-    l = lfs - 1;
-    tree.resize(lfs * 2);
-    for (int i = 0; i < (N - 1); ++i)
+    parent = v_i(N + 10, 0);
+    depth = v_i(N + 10, 0);
+    heavy = v_i(N + 10, -1);
+    head = v_i(N + 10, 0);
+    pos = v_i(N + 10, 0);
+    curr_pos = 0;
+    for (int i = 1; i < N; ++i)
     {
-        int v, u, w;
-        scanf("%d%d%d", &v, &u, &w);
-        graph[v].deston.pb(u);
-        graph[v].dist.pb(w);
-        
-        graph[u].deston.pb(v);
-        graph[u].dist.pb(w);
+        int a, b, c;
+        scanf("%d%d%d", &a, &b, &c);
+        graph[a].dest.pb({b, c});
+        graph[b].dest.pb({a, c});
     }
 }
 
-void Insert(int x, int v)
+int Dfs(int v = 1)
 {
-    tree[v] = x;
-    while (v /= 2)
-        tree[v] = max(tree[v * 2], tree[(v * 2) + 1]);
-}
-
-int Query(int q_a, int q_b, int t_a = 1, int t_b = lfs, int v = 1)
-{
-    if (t_a > q_b || t_b < q_a)
-        return 0;
-    else if (t_a >= q_a && t_b <= q_b)
-        return tree[v];
-    else
+    int size = 1, max_node_size = 0;
+    for (auto node : graph[v].dest)
     {
-        int mid = (t_a + t_b) / 2;
-        return max(Query(q_a, q_b, t_a, mid, v * 2), Query(q_a, q_b, mid + 1, t_b, (v * 2) + 1));
-    }
-}
-
-int Dfs(int v, int p, int w, int d = 1)
-{
-    graph[v].vis = true;
-    graph[v].deep = d;
-    graph[v].parent = p;
-    graph[v].w = w;
-    for (int node = 0; node < graph[v].deston.size(); ++node)
-    {
-        if (!graph[graph[v].deston[node]].vis)
-            graph[v].stc += Dfs(graph[v].deston[node], v, graph[v].dist[node], d + 1);
-    }
-    for (int node : graph[v].deston)
-    {
-        if (node != p)
+        if (node.first != parent[v])
         {
-            if (graph[v].heavy == -1 || graph[graph[v].heavy].stc <= graph[node].stc)
-                graph[v].heavy = node;
-            else
-                graph[v].heavy = graph[v].heavy;
+            parent[node.first] = v, depth[node.first] = depth[v] + 1;
+            int node_size = Dfs(node.first);
+            size += node_size;
+            if (node_size > max_node_size)
+                max_node_size = node_size, heavy[v] = node.first;
         }
     }
-    return graph[v].stc;
+    return size;
 }
 
-void Decompose(int h, int v)
+void Decompose(int v = 1, int h = 1)
 {
-    graph[v].pos = pos++;
-    Insert(pos + l - 1, graph[v].w);
-    graph[v].head = h;
-    if (graph[v].heavy == -1)
-        return;
-    Decompose(h, graph[v].heavy);
-    for (int node : graph[v].deston)
+    head[v] = h, pos[v] = curr_pos++;
+    if (heavy[v] != -1)
+        Decompose(heavy[v], h);
+    for (auto node : graph[v].dest)
     {
-        if (node != graph[v].heavy && node != graph[v].parent)
-            Decompose(node, node);
+        if (node.first != parent[v] && node.first != heavy[v])
+            Decompose(node.first, node.first);
     }
 }
 
-int HldQr(int a, int b)
+int HldQr(int v, int u)
 {
-    int res = 0;
-    while (graph[a].head != graph[b].head)
+    res = 0;
+    for (; head[v] != head[u]; u = parent[head[u]])
     {
-        if (graph[graph[a].head].deep < graph[graph[b].head].deep)
-            swap(a, b);
-        res += Query(graph[graph[a].head].pos, graph[a].pos);
-        a = graph[graph[a].head].parent;
+        if (depth[head[v]] > depth[head[u]])
+            swap(v, u);
+        // res = max(res, Query(pos[head[u]], pos[u]))
     }
-    if (a != b)
-        res += Query(graph[a].pos < graph[b].pos ? graph[a].pos : graph[b].pos, graph[a].pos > graph[b].pos ? graph[a].pos - 1 : graph[b].pos - 1);
+    if (depth[v] > depth[u])
+        swap(v, u);
+    // res = max(res, Query(pos[v], pos[u]));
     return res;
 }
 
@@ -120,19 +90,8 @@ void Solve()
     for (int i = 0; i < t; ++i)
     {
         Init();
-        string qr;
-        int a, b;
-        while (qr != "DONE")
-        {
-            cin >> qr;
-            scanf("%d%d", &a, &b);
-            if (qr == "QUERY")
-            {
-            }
-            else if (qr == "CHANGE")
-            {
-            }
-        }
+        Dfs();
+        Decompose();
     }
 }
 
