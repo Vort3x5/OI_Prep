@@ -12,25 +12,32 @@ typedef vector <ll> v_ll;
 
 ll n, l, lfs, res;
 
-v_ll arr, inc_tree, dec_tree;
+v_ll arr, inc_tree, dec_tree, scal;
+vector <pair <ll, ll>> sorted;
+
+void Insert(v_ll &tree, int v, int x = 1)
+{
+    tree[v] = x;
+    while (v /= 2)
+        tree[v] = max(tree[v * 2], tree[(v * 2) + 1]);
+}
 
 void Init()
 {
     scanf("%lld", &n);
     lfs = 1 << int(log2(n - 1) + 1);
     l = lfs - 1;
-    arr.resize(n + 10);
+    arr.resize(n);
+    sorted.resize(n);
+    scal.resize(n);
     inc_tree.resize(2 * lfs);
     dec_tree.resize(2 * lfs);
     for (int i = 0; i < n; ++i)
+    {
         scanf("%lld", &arr[i]);
-}
-
-void Insert(v_ll &tree, int v, ll x)
-{
-    tree[v] = x;
-    while (v /= 2)
-        tree[v] = max(tree[v * 2], tree[(v * 2) + 1]);
+        sorted[i].first = arr[i];
+        sorted[i].second = i;
+    }
 }
 
 ll Query(v_ll &tree, int q_a, int q_b, int v = 1, int t_a = 1, int t_b = lfs)
@@ -48,10 +55,13 @@ ll Query(v_ll &tree, int q_a, int q_b, int v = 1, int t_a = 1, int t_b = lfs)
 
 void Solve()
 {
+    sort(sorted.begin(), sorted.end());
+    for (int i = 0; i < n; ++i)
+        scal[sorted[i].second] = i + 1;
     for (int node = 0; node < n; ++node)
-        Insert(inc_tree, arr[node] + l, Query(inc_tree, 1, arr[node] - 1) + 1);
+        Insert(inc_tree, scal[node] + l, Query(inc_tree, 1, scal[node] - 1) + 1);
     for (int node = n - 1; node >= 0; --node)
-        Insert(dec_tree, arr[node] + l, Query(dec_tree, 1, arr[node] - 1) + 1);
+        Insert(dec_tree, scal[node] + l, Query(dec_tree, 1, scal[node] - 1) + 1);
 
     for (int node = 1; node <= n; ++node)
         res = max(res, Query(inc_tree, 1, node) + Query(dec_tree, node + 1, lfs));
