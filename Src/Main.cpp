@@ -40,7 +40,7 @@ int Dfs(int status, int iter = 0, int v = 1)
     for (int node : graph[v].deston)
     {
         if (!graph[node].vis[iter])
-            dp[v][status] += Dfs(!status, node);
+            dp[v][status] += Dfs(!status, iter, node);
     }
     return dp[v][status] + status;
 }
