@@ -11,134 +11,50 @@ typedef vector <int> v_i;
 
 #define stc sub_tree_count
 
+int n, dp[100010][2];
+
 struct Edge
 {
-    vector <p_i> dest;
+    v_i deston;
+    bool vis;
 };
 
-int t, N, curr_pos, res, l, lfs;
-
 vector <Edge> graph;
-v_i parent, depth, heavy, head, pos, tree, dist;
 
 void Init()
 {
-    scanf("%d", &N);
-    lfs = 1 << int(log2(N) + 1);
-    l = lfs - 1;
-    graph.resize(N + 10);
-    tree = v_i(2 * lfs, 0);
-    parent = v_i(N + 10, 0);
-    dist = v_i(N + 10, 0);
-    depth = v_i(N + 10, 0);
-    heavy = v_i(N + 10, -1);
-    head = v_i(N + 10, 0);
-    pos = v_i(N + 10, 0);
-    curr_pos = 0;
-    for (int i = 1; i < N; ++i)
+    scanf("%d", &n);
+    graph.resize(n + 10);
+    for (int i = 1; i < n; ++i)
     {
-        int a, b, c;
-        scanf("%d%d%d", &a, &b, &c);
-        graph[a].dest.pb({b, c});
-        graph[b].dest.pb({a, c});
+        int v, u;
+        scanf("%d%d", &v, &u);
+        graph[v].deston.pb(u);
     }
 }
 
-int Dfs(int v = 1, int w = graph[1].dest[0].second)
+int Dfs(int v = 1, int status = 0)
 {
-    int size = 1, max_node_size = 0;
-    dist[v] = w;
-    for (auto node : graph[v].dest)
+    graph[v].vis = true;
+    for (int node : graph[v].deston)
     {
-        if (node.first != parent[v])
-        {
-            parent[node.first] = v, depth[node.first] = depth[v] + 1;
-            int node_size = Dfs(node.first, node.second);
-            size += node_size;
-            if (node_size > max_node_size)
-                max_node_size = node_size, heavy[v] = node.first, dist[v] = node.second;
-        }
+        if (!graph[node].vis)
+            dp[v][0] += Dfs(node, 1), dp[v][1] += Dfs(node, 0);
     }
-    return size;
-}
-
-void Insert(int v, int x)
-{
-    tree[v] = x;
-    for (v /= 2; v; v /= 2)
-        tree[v] = max(tree[v * 2], tree[(v * 2) + 1]);
-}
-
-int Query(int q_a, int q_b, int v = 1, int t_a = 1, int t_b = lfs)
-{
-    if (t_a > q_b || t_b < q_a)
-        return 0;
-    else if (t_a >= q_a && t_b <= q_b)
-        return tree[v];
-    else
-    {
-        int mid = (t_a + t_b) / 2;
-        return max(Query(q_a, q_b, v * 2, t_a, mid), Query(q_a, q_b, (v * 2) + 1, mid + 1, t_b));
-    }
-}
-
-void Decompose(int v = 1, int h = 1)
-{
-    head[v] = h, pos[v] = curr_pos++;
-    Insert(curr_pos + l - 1, dist[v]);
-    if (heavy[v] != -1)
-        Decompose(heavy[v], h);
-    for (p_i node : graph[v].dest)
-    {
-        if (node.first != parent[v] && node.first != heavy[v])
-            Decompose(node.first, node.first);
-    }
-}
-
-int HldQr(int v, int u)
-{
-    res = 0;
-    for (; head[v] != head[u]; u = parent[head[u]])
-    {
-        if (depth[head[v]] > depth[head[u]])
-            swap(v, u);
-    res = max(res, Query(pos[head[u]], pos[u]));
-    }
-    if (depth[v] > depth[u])
-        swap(v, u);
-    res = max(res, Query(pos[v], pos[u]));
-    return res;
+    return 0;
 }
 
 void Solve()
 {
-    scanf("%d", &t);
-    for (int i = 0; i < t; ++i)
-    {
-        Init();
-        Dfs();
-        Decompose();
-        string qr;
-        int a, b;
-        cin >> qr;
-        while (qr != "DONE")
-        {
-            scanf("%d%d", &a, &b);
-            
-            if (qr == "CHANGE")
-                Insert(a + l, b);
-            
-            else if (qr == "QUERY")
-                printf("%d\n", HldQr(a, b));
-            cin >> qr;
-        }
-    }
+    Dfs();
 }
 
 int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
+
+    Init();
     Solve();
 
     return 0;
