@@ -44,7 +44,7 @@ void Init()
     }
 }
 
-int Dfs(int v = 1, int w = graph[1].dest[0].second)
+int Dfs(int w, int v = 1)
 {
     int size = 1, max_node_size = 0;
     dist[v] = w;
@@ -53,10 +53,10 @@ int Dfs(int v = 1, int w = graph[1].dest[0].second)
         if (node.first != parent[v])
         {
             parent[node.first] = v, depth[node.first] = depth[v] + 1;
-            int node_size = Dfs(node.first, node.second);
+            int node_size = Dfs(node.second, node.first);
             size += node_size;
             if (node_size > max_node_size)
-                max_node_size = node_size, heavy[v] = node.first, dist[v] = node.second;
+                max_node_size = node_size, heavy[v] = node.second;
         }
     }
     return size;
@@ -116,7 +116,7 @@ void Solve()
     for (int i = 0; i < t; ++i)
     {
         Init();
-        Dfs();
+        Dfs(0);
         Decompose();
         string qr;
         int a, b;
@@ -139,6 +139,7 @@ int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
+    
     Solve();
 
     return 0;
