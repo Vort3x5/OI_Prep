@@ -53,10 +53,11 @@ void BuildDfsTree(int v = 1)
         if (!graph[node.dest].vis)
         {
             dfs_g[v].deston.pb(node);
+            dfs_g[node.dest].deston.pb({v, dfs_g[v].deston[node.dest].tres});
             BuildDfsTree(node.dest);
         }
         else
-            rest[node.dest].deston.pb({v, graph[v].deston[node.dest].tres});
+            rest[node.dest].deston.pb({v, graph[v].deston[node.dest].tres}), rest[v].deston.pb({node.dest, graph[v].deston[node.dest].tres});
     }
 }
 
@@ -74,12 +75,33 @@ void CountLow(int v = 1)
             low[v] = min(low[v], low[node.dest]);
         }
     }
+
+    for (int node = 0; node < rest[v].deston.size(); ++node)
+        low[v] = min(low[v], depth[rest[v].deston[node].dest]);
+}
+
+int Find()
+{
+    return 0;
+}
+
+void Union()
+{}
+
+bool Res(int v = 1)
+{
+    graph[v].vis = false;
+    for (Edge node : graph[v].deston)
+    {
+    }
+    return false;
 }
 
 void Solve()
 {
     BuildDfsTree();
     CountLow();
+    printf("%s\n", Res() ? "YES" : "NO");
 }
 
 int main()
