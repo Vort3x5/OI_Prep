@@ -12,11 +12,11 @@ typedef vector <int> v_i;
 struct Edge
 {
     v_i deston, id;
-    int in, out;
+    int deg;
     bool vis;
 };
 
-int n, m, start, s_end;
+int n, m, odd;
 
 vector <Edge> graph;
 deque <int> eul_path;
@@ -32,6 +32,9 @@ void Init()
         scanf("%d%d", &v, &u);
         graph[v].deston.pb(u);
         graph[v].id.pb(i);
+
+        graph[u].deston.pb(v);
+        graph[u].id.pb(i);
     }
 }
 
@@ -40,8 +43,7 @@ void CountDegrees(int v)
     graph[v].vis = true;
     for (auto node : graph[v].deston)
     {
-        ++graph[v].out;
-        ++graph[node].in;
+        ++graph[v].deg;
         if (!graph[node].vis)
             CountDegrees(node);
     }
@@ -80,49 +82,18 @@ void Solve()
     bool cycle = true;
     for (int v = 1; v <= n; ++v)
     {
-        switch (graph[v].out - graph[v].in)
-        {
-            case 0:
-                break;
-
-            case 1:
-                cycle = false;
-                if (!start)
-                    start = v;
-                else
-                {
-                    printf("IMPOSSIBLE\n");
-                    return;
-                }
-                break;
-            
-            case -1:
-                cycle = false;
-                if (!s_end)
-                    s_end = v;
-                else
-                {
-                    printf("IMPOSSIBLE\n");
-                    return;
-                }
-                break;
-            
-            default:
-                cycle = false;
-                break;
-        }
+        if (graph[v].deg % 2)
+            ++odd, cycle = false;
     }
-    if (!cycle && (!start || !s_end))
+    if (!cycle && odd > 2)
     {
         printf("IMPOSSIBLE\n");
         return;
     }
 
-    if (cycle)
-        start = 1;
-    FindEulPath(start);
+    FindEulPath(1);
     
-    if (!WereVisited() || eul_path.back() != n)
+    if (!WereVisited() || eul_path.back() != 1)
     {
         printf("IMPOSSIBLE\n");
         return;
