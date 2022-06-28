@@ -47,8 +47,8 @@ int Dfs(int status, int iter = 0, int v = 1)
 
 void Solve()
 {
-    Dfs(0);
-    Dfs(1, 1);
+    dp[1][0] = Dfs(0);
+    dp[1][1] = Dfs(1, 1);
     printf("%d\n", min(dp[1][0], dp[1][1]));
 }
 
