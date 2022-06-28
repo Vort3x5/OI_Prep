@@ -56,7 +56,7 @@ int Dfs(int w, int v = 1)
             int node_size = Dfs(node.second, node.first);
             size += node_size;
             if (node_size > max_node_size)
-                max_node_size = node_size, heavy[v] = node.second;
+                max_node_size = node_size, heavy[v] = node.first;
         }
     }
     return size;
@@ -102,11 +102,11 @@ int HldQr(int v, int u)
     {
         if (depth[head[v]] > depth[head[u]])
             swap(v, u);
-    res = max(res, Query(pos[head[u]], pos[u]));
+    res = max(res, Query(pos[head[u]] + 1, pos[u] + 1));
     }
     if (depth[v] > depth[u])
         swap(v, u);
-    res = max(res, Query(pos[v], pos[u]));
+    res = max(res, Query(pos[v] + 1, pos[u] + 1));
     return res;
 }
 
