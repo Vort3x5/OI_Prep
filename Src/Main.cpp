@@ -85,7 +85,7 @@ int Query(int q_a, int q_b, int v = 1, int t_a = 1, int t_b = lfs)
 void Decompose(int v = 1, int h = 1)
 {
     head[v] = h, pos[v] = curr_pos++;
-    Insert(curr_pos + l - 1, dist[v]);
+    Insert(curr_pos + l, dist[v]);
     if (heavy[v] != -1)
         Decompose(heavy[v], h);
     for (p_i node : graph[v].dest)
