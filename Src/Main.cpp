@@ -23,8 +23,9 @@ struct Node
 
 int n, m, src, dest;
 
-vector <Node> graph, dfs_g, rest;
-v_i low, depth;
+vector <Node> graph, dfs_g, rev_dfs_g;
+stack <int> topo_sort;
+v_i scc;
 
 
 void Init()
@@ -32,8 +33,8 @@ void Init()
     scanf("%d%d", &n, &m);
     graph.resize(n + 10);
     dfs_g.resize(n + 10);
-    low.resize(n + 10);
-    depth.resize(n + 10);
+    rev_dfs_g.resize(n + 10);
+    scc.resize(n + 10);
     for (int i = 0; i < m; ++i)
     {
         int v, u, art;
@@ -53,54 +54,47 @@ void BuildDfsTree(int v = 1)
         if (!graph[node.dest].vis)
         {
             dfs_g[v].deston.pb(node);
-            dfs_g[node.dest].deston.pb({v, dfs_g[v].deston[node.dest].tres});
+            rev_dfs_g[node.dest].deston.pb({v, dfs_g[v].deston[node.dest].tres});
             BuildDfsTree(node.dest);
         }
         else
-            rest[node.dest].deston.pb({v, graph[v].deston[node.dest].tres}), rest[v].deston.pb({node.dest, graph[v].deston[node.dest].tres});
+            dfs_g[node.dest].deston.pb({v, graph[v].deston[node.dest].tres}), rev_dfs_g[v].deston.pb({node.dest, graph[v].deston[node.dest].tres});
     }
 }
 
-void CountLow(int v = 1)
+void TopoSort(int v = 1)
 {
     dfs_g[v].vis = true;
-    low[v] = depth[v];
-
     for (Edge node : dfs_g[v].deston)
-    {
         if (!dfs_g[node.dest].vis)
-        {
-            depth[node.dest] = depth[v] + 1;
-            CountLow(node.dest);
-            low[v] = min(low[v], low[node.dest]);
-        }
-    }
-
-    for (int node = 0; node < rest[v].deston.size(); ++node)
-        low[v] = min(low[v], depth[rest[v].deston[node].dest]);
+            TopoSort(node.dest);
+    topo_sort.push(v);
 }
 
-int Find()
+void InitScc(int v, int i)
 {
-    return 0;
+    dfs_g[v].vis = false;
+    scc[v] = i;
+    for (Edge node : rev_dfs_g[v].deston)
+        if (dfs_g[node.dest].vis)
+            InitScc(node.dest, i);
 }
 
-void Union()
-{}
-
-bool Res(int v = 1)
+bool Res()
 {
-    graph[v].vis = false;
-    for (Edge node : graph[v].deston)
-    {
-    }
-    return false;
+    return scc[src] == scc[dest];
 }
 
 void Solve()
 {
     BuildDfsTree();
-    CountLow();
+    TopoSort();
+    for (int i = 1; !topo_sort.empty();)
+    {
+        if (dfs_g[topo_sort.top()].vis)
+            InitScc(topo_sort.top(), i++);
+        topo_sort.pop();
+    }
     printf("%s\n", Res() ? "YES" : "NO");
 }
 
