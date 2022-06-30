@@ -16,7 +16,7 @@ struct Edge
     bool vis;
 };
 
-int n, m, odd;
+int n, m;
 
 vector <Edge> graph;
 deque <int> eul_path;
@@ -81,24 +81,20 @@ void Solve()
     
     bool cycle = true;
     for (int v = 1; v <= n; ++v)
-    {
         if (graph[v].deg % 2)
-            ++odd, cycle = false;
-    }
-    if (!cycle && odd > 2)
+            cycle = false;
+    if (!cycle || graph[1].deston.empty())
     {
         printf("IMPOSSIBLE\n");
         return;
     }
-
     FindEulPath(1);
-    
     if (!WereVisited() || eul_path.back() != 1)
     {
         printf("IMPOSSIBLE\n");
         return;
     }
-    
+
     for (auto res : eul_path)
         printf("%d ", res);
     printf("\n");
