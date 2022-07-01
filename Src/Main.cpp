@@ -64,7 +64,7 @@ void Solve()
         Insert(dec_tree, scal[node] + l, Query(dec_tree, 1, scal[node] - 1) + 1);
 
     for (int node = 1; node <= n; ++node)
-        res = max(res, Query(inc_tree, 1, node) + Query(dec_tree, node + 1, lfs));
+        res = max(res, Query(inc_tree, 1, node) + Query(dec_tree, node, lfs) - 1);
     printf("%lld\n", n - res);
 }
 
