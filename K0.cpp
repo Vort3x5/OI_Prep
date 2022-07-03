@@ -44,13 +44,9 @@ void Init()
 int Query(int qr_a, int qr_b, int a = 1, int b = lfs, int node = 1)
 {
     if (b < qr_a || a > qr_b)
-    {
         return 0;
-    }
     else if (a >= qr_a && b <= qr_b)
-    {
         return tree[node].val;
-    }
     else
     {
         int mid = (a + b) / 2;
@@ -75,7 +71,7 @@ void Solve()
     for (int i = 0; i < q; ++i)
     {
         Qr qr;
-        cin >> qr.a >> qr.b;
+        cin >> qr.type >> qr.a >> qr.b;
         switch (qr.type)
         {
             case 1:

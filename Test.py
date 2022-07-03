@@ -17,8 +17,6 @@ def Compile():
         exit(1)
 
 def MakeCases():
-    proc.run(["python3", "clear_tests.py"])
-    proc.run(["python3", "Gen.py", str(N)])
     for i in range (N):
         with open("In/Inpts" + str(i) + ".in") as In:
         
