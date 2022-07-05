@@ -10,7 +10,7 @@ typedef pair <int, int> p_i;
 typedef vector <int> v_i;
 typedef vector <ll> v_ll;
 
-ll n, l, lfs, res;
+ll n, l, lfs, res, ww;
 
 v_ll arr, inc_tree, dec_tree, scal;
 vector <pair <ll, ll>> sorted;
