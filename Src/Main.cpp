@@ -23,7 +23,7 @@ struct Node
 
 int n, m, src, dest;
 
-vector <Node> graph, dfs_g, rev_dfs_g;
+vector <Node> graph, dfs_g, rev_dfs_g, scc_g;
 stack <int> topo_sort;
 v_i scc;
 
@@ -80,9 +80,22 @@ void InitScc(int v, int i)
             InitScc(node.dest, i);
 }
 
+bool SccDfs(int v = scc[src])
+{
+    graph[v].vis = false;
+    for (Edge node : graph[v].deston)
+    {
+        if (node.tres && scc[src] == scc[node.dest])
+            return true;
+        else if (graph[node.dest].vis)
+            return SccDfs(node.dest);
+    }
+    return false;
+}
+
 bool Res()
 {
-    return scc[src] == scc[dest];
+    return (SccDfs() && scc[src] == scc[dest]);
 }
 
 void Solve()
