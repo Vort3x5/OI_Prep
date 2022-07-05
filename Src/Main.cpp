@@ -16,7 +16,7 @@ int n, dp[100010][2];
 struct Edge
 {
     v_i deston;
-    bool vis[2];
+    bool vis;
 };
 
 vector <Edge> graph;
@@ -34,22 +34,21 @@ void Init()
     }
 }
 
-int Dfs(int status, int iter = 0, int v = 1)
+int Dfs(int v = 1)
 {
-    graph[v].vis[iter] = true;
+    graph[v].vis = true;
     for (int node : graph[v].deston)
     {
-        if (!graph[node].vis[iter])
-            dp[v][status] += Dfs(!status, iter, node);
+        if (!graph[node].vis)
+            dp[v][1] += min(dp[node][0], dp[node][1]), dp[v][0] += dp[node][1];
     }
-    return dp[v][status] + status;
+    ++dp[v][1];
+    return min(dp[v][1], dp[v][0]);
 }
 
 void Solve()
 {
-    dp[1][0] = Dfs(0);
-    dp[1][1] = Dfs(1, 1);
-    printf("%d\n", min(dp[1][0], dp[1][1]));
+    printf("%d\n", Dfs());
 }
 
 int main()
