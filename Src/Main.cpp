@@ -40,7 +40,10 @@ int Dfs(int v = 1)
     for (int node : graph[v].deston)
     {
         if (!graph[node].vis)
+        {
+            Dfs(node);
             dp[v][1] += min(dp[node][0], dp[node][1]), dp[v][0] += dp[node][1];
+        }
     }
     ++dp[v][1];
     return min(dp[v][1], dp[v][0]);
