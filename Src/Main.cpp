@@ -21,9 +21,9 @@ struct Node
     bool vis;
 };
 
-int n, m, src, dest;
+int n, m, src, dest, tres_scc;
 
-vector <Node> graph, dfs_g, rev_dfs_g;
+vector <Node> graph, dfs_g, rev_dfs_g, scc_g;
 stack <int> topo_sort;
 v_i scc;
 
@@ -35,6 +35,7 @@ void Init()
     dfs_g.resize(n + 10);
     rev_dfs_g.resize(n + 10);
     scc.resize(n + 10);
+    scc_g.resize(n + 10);
     for (int i = 0; i < m; ++i)
     {
         int v, u, art;
@@ -80,9 +81,30 @@ void InitScc(int v, int i)
             InitScc(node.dest, i);
 }
 
-bool Res()
+void TresScc(int v = 1)
 {
-    return scc[src] == scc[dest];
+    graph[v].vis = false;
+    for (Edge node : graph[v].deston)
+    {
+        if (graph[v].deston[node.dest].tres && scc[v] == scc[node.dest])
+            tres_scc = scc[v];
+        if (graph[node.dest].vis)
+            TresScc(node.dest);
+    }
+}
+
+bool Res(int v = scc[src], bool found = false)
+{
+    scc_g[v].vis = true;
+    if (v == scc[dest])
+        return found;
+    for (Edge node : scc_g[v].deston)
+    {
+        if (tres_scc == scc[node.dest] || node.tres)
+            found = true;
+        if (!scc_g[node.dest].vis)
+            return Res(node.dest, found);
+    }
 }
 
 void Solve()
@@ -95,7 +117,14 @@ void Solve()
             InitScc(topo_sort.top(), i++);
         topo_sort.pop();
     }
-    printf("%s\n", Res() ? "YES" : "NO");
+    for (int v = 1; v <= n; ++v)
+    {
+        for (Edge node : graph[v].deston)
+            if (scc[v] != scc[node.dest])
+                scc_g[scc[v]].deston.pb({scc[node.dest], node.tres});
+    }
+    TresScc();
+    printf("%s\n", (scc[src] == scc[dest] && scc[src] == tres_scc) || Res() ? "YES" : "NO");
 }
 
 int main()
