@@ -17,11 +17,9 @@ vector <Node> tree;
 
 void Insert(int node, bool add)
 {
-    node /= 2;
-    if (node == 0)
-        return;
-    tree[node].val = add ? ++tree[node].val : --tree[node].val;
-    Insert(node, add);
+    tree[node].val = !add;
+    while (node /= 2)
+        tree[node].val = tree[node * 2].val + tree[(node * 2) + 1].val;
 }
 
 void Init()
@@ -33,11 +31,7 @@ void Init()
     for (int node = 1; node <= n; ++node)
     {
         cin >> tree[node + l].val;
-        tree[node + l].val = !(tree[node + l].val);
-        if (tree[node + l].val)
-        {
-            Insert(node + l, true);
-        }
+        Insert(node + l, tree[node + l].val);
     }
 }
 
@@ -75,8 +69,6 @@ void Solve()
         switch (qr.type)
         {
             case 1:
-                if (tree[qr.a + l].val && qr.b)
-                    continue;
                 Insert(qr.a, tree[qr.a + l].val);
                 tree[qr.a + l].val = !qr.b;
                 break;
