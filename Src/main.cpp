@@ -15,10 +15,11 @@ struct Edge
 {
     vector <int> dests;
     int parents = 0;
+    bool vis;
 };
 
 vector <Edge> graph;
-stack <int> roots;
+stack <int> roots, topo_sort;
 
 void Init()
 {
@@ -72,6 +73,15 @@ bool IsCycle(stack <int> nodes)
     return false;
 }
 
+void TopoSort(int v)
+{
+    graph[v].vis = true;
+    for (auto node : graph[v].dests)
+        if (!graph[node].vis)
+            TopoSort(node);
+    topo_sort.push(v);
+}
+
 void Solve()
 {
     for (int v = 1; v <= n; ++v)
@@ -82,11 +92,20 @@ void Solve()
 
     if (roots.empty() || IsCycle(roots))
         cout << "IMPOSSIBLE\n";
-
-    while (!roots.empty())
+    
+    for (int v = 1; v <= (m * 2); ++v)
+        if (!graph[v].vis)
+            TopoSort(v);
+    
+    /*while (!roots.empty())
     {
         Bfs();
         roots.pop();
+    }*/
+    while (!topo_sort.empty())
+    {
+        printf("%d ", topo_sort.top());
+        topo_sort.pop();
     }
     cout << '\n';
 }
