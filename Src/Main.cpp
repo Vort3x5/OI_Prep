@@ -21,7 +21,7 @@ ull CountHash(int s_end, const string &s)
 {
     ull sum = 0;
     for (int i = 0; i <= s_end; ++i)
-        sum += (pows[i] * s[i]) % (long long)M;
+        sum += (pows[i] * s[i]) % (ull)M;
     return sum;
 }
 
