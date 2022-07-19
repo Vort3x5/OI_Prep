@@ -2,33 +2,31 @@
 
 #define pb push_back
 #define pf push_front
-#define M  10e9 + 7
+#define M  1696969
 
 using namespace std;
 
 typedef long long ll;
-typedef unsigned long long ull;
+typedef unsigned long long u64;
+typedef long long s64;
 typedef pair <int, int> p_i;
 typedef vector <int> v_i;
-typedef vector <ull> v_ull;
+typedef vector <u64> v_u64;
 
 int n, t, lfs, l, p = 29;
 string s1, s2;
 
-v_ull s1_tree, s2_tree, pows;
+v_u64 pows, s1_tree, s2_tree;
 
-ull CountHash(int s_end, const string &s)
+inline u64 CountHash(int i, const string &s)
 {
-    ull sum = 0;
-    for (int i = 0; i <= s_end; ++i)
-        sum += (pows[i] * s[i]) % (ull)M;
-    return sum;
+    return (pows[i] * s[i]) % (u64)M;
 }
-
-void Insert(int v, int val, v_ull &tree)
+void Insert(int v, s64 val, v_u64 &tree)
 {
+    tree[v] += val;
     while (v /= 2)
-        tree[v] = (tree[v * 2] + tree[(v * 2) + 1]) % (ull)M;
+        tree[v] = tree[v * 2] + tree[(v * 2) + 1] % (u64)M;
 }
 
 void Init()
@@ -42,23 +40,20 @@ void Init()
     pows.resize(n + 10);
     pows[0] = 1;
     for (int i = 1; i <= n; ++i)
-        pows[i] = (pows[i - 1] * p) % (ull)M;
+        pows[i] = (pows[i - 1] * p) % (u64)M;
     for (int i = 0; i < n; ++i)
     {
-        s1_tree[i + lfs] = CountHash(i, s1);
-        Insert(i + lfs, s1_tree[i + lfs], s1_tree);
-        s2_tree[i + lfs] = CountHash(i, s2);
-        Insert(i + lfs, s2_tree[i + lfs], s2_tree);
+        Insert(i + lfs, CountHash(i, s1), s1_tree);
+        Insert(i + lfs, CountHash(i, s2), s2_tree);
     }
 }
 
-inline void RecountHash(int pos, int prev, int s_new, int v, v_ull &tree)
+inline s64 RecountHash(int pos, int prev, int s_new)
 {
-    tree[v] -= (pows[pos] * prev) % (ull)M;
-    tree[v] += (pows[pos] * s_new) % (ull)M;
+    return ((s_new - prev) * pows[pos]);
 }
 
-ull Query(int v = 1, int a = 1, int b = lfs)
+u64 Query(int v = 1, int a = 1, int b = lfs)
 {
     if (v >= n)
         return (s1_tree[v] == s2_tree[v] ? 0 : s1_tree[v] > s2_tree[v] ? 1 : 2);
@@ -76,11 +71,9 @@ void Solve()
     {
         int i, j;
         scanf("%d%d", &i, &j);
-        int s1_val = s1_tree[i + lfs];
-        RecountHash(i, s1_tree[i + lfs], s2_tree[j + lfs], i + lfs, s1_tree);
-        Insert(i + lfs, s1_tree[i + lfs], s1_tree);
-        RecountHash(i, s2_tree[j + lfs], i == j ? s1_val : s1_tree[i + lfs], j + lfs, s2_tree);
-        Insert(j + lfs, s2_tree[j + lfs], s2_tree);
+        swap(s1[i], s2[j]);
+        Insert(i + lfs, RecountHash(i, s2[j], s1[i]), s1_tree);
+        Insert(j + lfs, RecountHash(j, s1[i], s2[j]), s2_tree);
         printf("%lld\n", Query());
     }
 }
