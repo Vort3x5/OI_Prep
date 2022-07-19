@@ -14,8 +14,7 @@ string s1, s2;
 
 void Init()
 {
-    scanf("%d", &n);
-    cin >> s1 >> s2;
+    cin >> n >> s1 >> s2;
 }
 
 int Cmp()
@@ -32,13 +31,13 @@ int Cmp()
 
 void Solve()
 {
-    scanf("%d", &t);
+    cin >> t;
     for (int q = 0; q < t; ++q)
     {
         int i, j;
-        scanf("%d%d", &i, &j);
+        cin >> i >> j;
         swap(s1[i], s2[j]);
-        printf("%d\n", Cmp());
+        cout << Cmp() << '\n';
     }
 }
 

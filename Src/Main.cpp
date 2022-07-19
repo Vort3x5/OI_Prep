@@ -31,8 +31,7 @@ void Insert(int v, s64 val, v_u64 &tree)
 
 void Init()
 {
-    scanf("%d", &n);
-    cin >> s1 >> s2;
+    cin >> n >> s1 >> s2;
     lfs = 1 << (int(log2(n)) + 1);
     l = lfs - 1;
     s1_tree.resize(2 * lfs);
@@ -66,15 +65,15 @@ u64 Query(int v = 1, int a = 1, int b = lfs)
 
 void Solve()
 {
-    scanf("%d", &t);
+    cin >> t;
     for (int q = 0; q < t; ++q)
     {
         int i, j;
-        scanf("%d%d", &i, &j);
+        cin >> i >> j;
         swap(s1[i], s2[j]);
         Insert(i + lfs, RecountHash(i, s2[j], s1[i]), s1_tree);
         Insert(j + lfs, RecountHash(j, s1[i], s2[j]), s2_tree);
-        printf("%lld\n", Query());
+        cout << Query() << '\n';
     }
 }
 
