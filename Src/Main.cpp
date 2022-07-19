@@ -55,7 +55,7 @@ inline s64 RecountHash(int pos, int prev, int s_new)
 
 u64 Query(int v = 1, int a = 1, int b = lfs)
 {
-    if (v >= n)
+    if (v >= lfs)
         return (s1_tree[v] == s2_tree[v] ? 0 : s1_tree[v] > s2_tree[v] ? 1 : 2);
     else
     {
