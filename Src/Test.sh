@@ -5,8 +5,8 @@ let "a = 0"
 for i in ./In/*.in;
 do
     let "a += 1"
-    ./brut < $i > ./Expected_Out/brut_res$a.out
-    ./main < $i > ./Given_Out/opt_res$a.out
+    ./brut < $i > Expected_Out/brut_res$a.out
+    ./main < $i > Given_Out/opt_res$a.out
 done
 
 for ((i = 1; i <= $a; ++i))
