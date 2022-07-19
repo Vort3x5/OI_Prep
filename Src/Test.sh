@@ -1,5 +1,7 @@
-let "a = 0"
+g++ -g -std=c++17 Main.cpp -o main
+g++ -g -std=c++17 Brut.cpp -o brut
 
+let "a = 0"
 for i in ./In/*.in;
 do
     let "a += 1"
