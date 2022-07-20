@@ -12,4 +12,4 @@ clean:
 	rm *.o out
 
 clean-all:
-	rm -rf *.o In/* Expected_Out/* Given_Out/* brut main
+	rm -rf *.o In/* Expected_Out/* Given_Out/*
