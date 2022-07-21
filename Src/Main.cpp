@@ -20,7 +20,7 @@ v_u64 pows, s1_tree, s2_tree;
 
 inline u64 CountHash(int i, const string &s)
 {
-    return (pows[i] * s[i]) % (u64)M;
+    return (pows[i] * (s[i] - 'a' + 1)) % (u64)M;
 }
 void Insert(int v, s64 val, v_u64 &tree)
 {
