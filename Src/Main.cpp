@@ -23,7 +23,7 @@ v_i parent, depth, heavy, head, pos, tree, dist;
 
 void Init()
 {
-    scanf("%d", &N);
+    cin >> N;
     lfs = 1 << int(log2(N) + 1);
     l = lfs - 1;
     graph.resize(N + 10);
@@ -38,7 +38,7 @@ void Init()
     for (int i = 1; i < N; ++i)
     {
         int a, b, c;
-        scanf("%d%d%d", &a, &b, &c);
+        cin >> a >> b >> c;
         graph[a].dest.pb({b, c});
         graph[b].dest.pb({a, c});
     }
@@ -112,7 +112,7 @@ int HldQr(int v, int u)
 
 void Solve()
 {
-    scanf("%d", &t);
+    cin >> t;
     for (int i = 0; i < t; ++i)
     {
         Init();
@@ -123,13 +123,12 @@ void Solve()
         cin >> qr;
         while (qr != "DONE")
         {
-            scanf("%d%d", &a, &b);
+            cin >> a >> b;
             
             if (qr == "CHANGE")
                 Insert(a + l, b);
-            
             else if (qr == "QUERY")
-                printf("%d\n", HldQr(a, b));
+                cout << HldQr(a, b) << '\n';
             cin >> qr;
         }
     }
