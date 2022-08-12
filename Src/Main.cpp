@@ -11,7 +11,7 @@ typedef vector <int> v_i;
 
 struct Edge
 {
-    int dest;
+    ll dest;
     bool tres;
 };
 
@@ -21,33 +21,33 @@ struct Node
     bool vis;
 };
 
-int n, m, src, dest, tres_scc;
+ll n, m, src, dest, tres_scc;
 
 vector <Node> graph, dfs_g, rev_dfs_g, scc_g;
-stack <int> topo_sort;
+stack <ll> topo_sort;
 v_i scc;
 
 
 void Init()
 {
-    scanf("%d%d", &n, &m);
+    cin >> n >> m;
     graph.resize(n + 10);
     dfs_g.resize(n + 10);
     rev_dfs_g.resize(n + 10);
     scc.resize(n + 10);
     scc_g.resize(n + 10);
-    for (int i = 0; i < m; ++i)
+    for (ll i = 0; i < m; ++i)
     {
-        int v, u, art;
-        scanf("%d%d%d", &v, &u, &art);
+        ll v, u, art;
+        cin >> v >> u >> art;
         
         graph[v].deston.pb({u, (bool)art});
         graph[u].deston.pb({v, (bool)art});
     }
-    scanf("%d%d", &src, &dest);
+    cin >> src >> dest;
 }
 
-void BuildDfsTree(int v = 1)
+void BuildDfsTree(ll v = 1)
 {
     graph[v].vis = true;
     for (Edge node : graph[v].deston)
@@ -63,7 +63,7 @@ void BuildDfsTree(int v = 1)
     }
 }
 
-void TopoSort(int v = 1)
+void TopoSort(ll v = 1)
 {
     dfs_g[v].vis = true;
     for (Edge node : dfs_g[v].deston)
@@ -72,7 +72,7 @@ void TopoSort(int v = 1)
     topo_sort.push(v);
 }
 
-void InitScc(int v, int i)
+void InitScc(ll v, ll i)
 {
     dfs_g[v].vis = false;
     scc[v] = i;
@@ -81,7 +81,7 @@ void InitScc(int v, int i)
             InitScc(node.dest, i);
 }
 
-void TresScc(int v = 1)
+void TresScc(ll v = 1)
 {
     graph[v].vis = false;
     for (Edge node : graph[v].deston)
@@ -93,7 +93,7 @@ void TresScc(int v = 1)
     }
 }
 
-bool Res(int v = scc[src], bool found = false)
+bool Res(ll v = scc[src], bool found = false)
 {
     scc_g[v].vis = true;
     if (v == scc[dest])
@@ -111,24 +111,27 @@ void Solve()
 {
     BuildDfsTree();
     TopoSort();
-    for (int i = 1; !topo_sort.empty();)
+    for (ll i = 1; !topo_sort.empty();)
     {
         if (dfs_g[topo_sort.top()].vis)
             InitScc(topo_sort.top(), i++);
         topo_sort.pop();
     }
-    for (int v = 1; v <= n; ++v)
+    for (ll v = 1; v <= n; ++v)
     {
         for (Edge node : graph[v].deston)
             if (scc[v] != scc[node.dest])
                 scc_g[scc[v]].deston.pb({scc[node.dest], node.tres});
     }
     TresScc();
-    printf("%s\n", (scc[src] == scc[dest] && scc[src] == tres_scc) || Res() ? "YES" : "NO");
+    cout << ((scc[src] == scc[dest] && scc[src] == tres_scc) || Res() ? "YES" : "NO") << '\n';
 }
 
 int main()
 {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+
     Init();
     Solve();
 
