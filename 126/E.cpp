@@ -11,7 +11,7 @@ typedef vector <int> v_i;
 
 struct Edge
 {
-    v_i dest;
+    unordered_set <int> dest;
     bool is = false;
 };
 
@@ -38,27 +38,27 @@ void Init()
 void AddChild(int v)
 {
     graph[v].is = true;
-    int node = v - n;
-    for (int i = 1; i < 3; ++i)
-    {
-        for (int j = node - 1; j <= node + 1; ++j)
-            if (j > 0 && j < graph.size() && !arr[j] && j != v)
-                graph[v].dest.pb(j);
-        node += n;
-    }
+    if (v - n > 0 && !arr[v - n])
+        graph[v].dest.insert(v - n), graph[v - n].dest.insert(v);
+    if (v - 1 > 0 && (v - 1) % n && !arr[v - 1])
+        graph[v].dest.insert(v - 1), graph[v - 1].dest.insert(v);
+    if (v + 1 < graph.size() && v % n && !arr[v + 1])
+        graph[v].dest.insert(v + 1), graph[v + 1].dest.insert(v);
+    if (v + n < graph.size() && !arr[v + n])
+        graph[v].dest.insert(v + n), graph[v + n].dest.insert(v);
 }
 
 void BuildGraph()
 {
-    for (int i = 1; i <= n * 3; ++i)
-        if (!arr[i])
-            AddChild(i);
+    for (int v = 1; v <= n * 3; ++v)
+        if (!arr[v])
+            AddChild(v);
 }
 
 void SccDfs(int v, int scc_count)
 {
     scc[v] = scc_count;
-    for (int &node : graph[v].dest)
+    for (int node : graph[v].dest)
         if (!scc[node])
             SccDfs(node, scc_count);
 }
@@ -78,7 +78,7 @@ void Solve()
 {
     BuildGraph();
     for (int v = 1, scc_count = 0; v < graph.size(); ++v)
-        if (!scc[v])
+        if (!scc[v] && !arr[v])
             SccDfs(v, ++scc_count);
     CountPrefSum();
     cin >> q;
