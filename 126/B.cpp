@@ -9,27 +9,12 @@ typedef long long ll;
 typedef pair <int, int> p_i;
 typedef vector <int> v_i;
 
-int t;
-ll a;
+int t, a, dp[16], res;
 
 void Init()
 {
     cin >> a;
-}
-
-ll NWD(int a, int b)
-{
-    while (a > 0)
-    {
-        a %= b;
-        b -= a;
-    }
-    return b;
-}
-
-ll NWW(int a, int b)
-{
-    return (a * b) / NWD(a, b);
+    memset(dp, 0, sizeof dp);
 }
 
 void Solve()
@@ -38,6 +23,16 @@ void Solve()
     for (int i = 0; i < t; ++i)
     {
         Init();
+        for (int j = 0; j < 16; ++j)
+        {
+            int shift = a + j;
+            while (shift % 32768)
+                ++dp[j], shift <<= 1;
+        }
+        res = 16;
+        for (int j = 0; j < 16; ++j)
+            res = min(res, dp[j] + j);
+        cout << res << ' ';
     }
     cout << '\n';
 }
