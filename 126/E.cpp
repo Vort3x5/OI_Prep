@@ -80,9 +80,24 @@ void Solve()
     for (int v = 1, scc_count = 0; v < graph.size(); ++v)
         if (!scc[v])
             SccDfs(v, ++scc_count);
+    CountPrefSum();
     cin >> q;
     for (int qr = 0; qr < q; ++qr)
     {
+        int l, r, to_add = 0;
+        cin >> l >> r;
+        if (l > 1)
+        {
+            for (int i = l; i < arr.size(); i += n)
+            {
+                if (!arr[i] && !arr[i - 1])
+                {
+                    if (i <= n || (arr[i - n] && arr[i - n - 1]))
+                        ++to_add;
+                }
+            }
+        }
+        cout << scc_pref[r] - scc_pref[l - 1] + to_add << '\n';
     }
 }
 
