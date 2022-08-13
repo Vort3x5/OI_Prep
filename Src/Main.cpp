@@ -14,6 +14,7 @@ struct Node
 {
     bool end;
     Node *child[60];
+    Node() { for (int i = 0; i < 60; ++i) this -> child[i] = nullptr; }
 };
 
 int t, n, node_pool_count;
@@ -27,10 +28,26 @@ Node *root = AllocNode();
 
 void Insert(Node *node, const string &text)
 {
-    for (int i = 0; i < text.size(); node = (node -> child[text[i]]), ++i)
+    for (int i = 0; i < text.size(); ++i)
+    {
         if (!(node -> child[text[i]]))
             node -> child[text[i]] = AllocNode();
+        node = (node -> child[text[i]]);
+    }
     node -> end = true;
+}
+
+void ClearTrie(Node *node = root)
+{
+    for (int i = '0'; i <= '9'; ++i)
+    {
+        if (node -> child[i])
+        {
+            node -> end = false;
+            ClearTrie(node -> child[i]);
+            node -> child[i] = nullptr;
+        }
+    }
 }
 
 void Init()
@@ -38,6 +55,8 @@ void Init()
     cin >> n;
     arr.clear();
     arr.resize(n);
+    npc = 1;
+    ClearTrie();
     for (auto &it : arr)
     {
         cin >> it;
