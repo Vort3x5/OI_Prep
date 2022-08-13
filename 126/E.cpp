@@ -38,20 +38,20 @@ void Init()
 void AddChild(int v)
 {
     graph[v].is = true;
-    if (v - n > 0 && !arr[v - n])
+    if (v - n > 0 && arr[v - n])
         graph[v].dest.insert(v - n), graph[v - n].dest.insert(v);
-    if (v - 1 > 0 && (v - 1) % n && !arr[v - 1])
+    if (v - 1 > 0 && (v - 1) % n && arr[v - 1])
         graph[v].dest.insert(v - 1), graph[v - 1].dest.insert(v);
-    if (v + 1 < graph.size() && v % n && !arr[v + 1])
+    if (v + 1 < graph.size() && v % n && arr[v + 1])
         graph[v].dest.insert(v + 1), graph[v + 1].dest.insert(v);
-    if (v + n < graph.size() && !arr[v + n])
+    if (v + n < graph.size() && arr[v + n])
         graph[v].dest.insert(v + n), graph[v + n].dest.insert(v);
 }
 
 void BuildGraph()
 {
     for (int v = 1; v <= n * 3; ++v)
-        if (!arr[v])
+        if (arr[v])
             AddChild(v);
 }
 
@@ -78,7 +78,7 @@ void Solve()
 {
     BuildGraph();
     for (int v = 1, scc_count = 0; v < graph.size(); ++v)
-        if (!scc[v] && !arr[v])
+        if (!scc[v] && arr[v])
             SccDfs(v, ++scc_count);
     CountPrefSum();
     cin >> q;
@@ -86,14 +86,15 @@ void Solve()
     {
         int l, r, to_add = 0;
         cin >> l >> r;
+        int used = 0;
         if (l > 1)
         {
-            for (int i = l; i < arr.size(); i += n)
+            for (int v = l; v < arr.size(); v += n)
             {
-                if (!arr[i] && !arr[i - 1])
+                if (arr[v] && arr[v - 1])
                 {
-                    if (i <= n || (arr[i - n] && arr[i - n - 1]))
-                        ++to_add;
+                    if (used != scc[v])
+                        ++to_add, used = scc[v];
                 }
             }
         }
