@@ -9,17 +9,9 @@ typedef long long ll;
 typedef pair <int, int> p_i;
 typedef vector <int> v_i;
 
-struct Edge
-{
-    unordered_set <int> dest;
-    bool is = false;
-};
-
 int n, q;
 string input[3];
-v_i arr, scc, scc_pref;
-vector <Edge> graph;
-bitset <500010> found;
+v_i arr, parent, children, all_pref, scc_pref, horizon_pref, vert_pref, nxt;
 
 void Init()
 {
@@ -27,78 +19,84 @@ void Init()
     for (int i = 0; i < 3; ++i)
         cin >> input[i];
     arr = v_i(3 * n + 1, 0);
-    graph.resize(arr.size());
-    scc.resize(arr.size());
+    parent.resize(arr.size());
+    children.resize(arr.size());
+    iota(parent.begin(), parent.end(), 0);
     scc_pref.resize(n + 1);
+    all_pref.resize(n + 1);
+    vert_pref.resize(n + 1);
+    horizon_pref.resize(n + 1);
+    nxt.resize(n + 1);
     for (int i = 0, indx = 1; i < 3; ++i)
         for (int j = 0; j < n; ++j, ++indx)
             arr[indx] = input[i][j] - '0';
 }
 
-void AddChild(int v)
+inline int GetParent(int v) { return v == parent[v] ? v : parent[v] = GetParent(parent[v]); }
+
+bool Unite(int v1, int v2)
 {
-    graph[v].is = true;
-    if (v - n > 0 && arr[v - n])
-        graph[v].dest.insert(v - n), graph[v - n].dest.insert(v);
-    if (v - 1 > 0 && (v - 1) % n && arr[v - 1])
-        graph[v].dest.insert(v - 1), graph[v - 1].dest.insert(v);
-    if (v + 1 < graph.size() && v % n && arr[v + 1])
-        graph[v].dest.insert(v + 1), graph[v + 1].dest.insert(v);
-    if (v + n < graph.size() && arr[v + n])
-        graph[v].dest.insert(v + n), graph[v + n].dest.insert(v);
+    v1 = GetParent(v1), v2 = GetParent(v2);
+    if (v1 == v2)
+        return false;
+
+    if (children[v1] < children[v2])
+        swap(v1, v2);
+    parent[v2] = v1;
+    children[v1] += children[v2];
+    return true;
 }
 
-void BuildGraph()
-{
-    for (int v = 1; v <= n * 3; ++v)
-        if (arr[v])
-            AddChild(v);
-}
-
-void SccDfs(int v, int scc_count)
-{
-    scc[v] = scc_count;
-    for (int node : graph[v].dest)
-        if (!scc[node])
-            SccDfs(node, scc_count);
-}
-
-void CountPrefSum()
+void PreProcess()
 {
     for (int i = 1; i <= n; ++i)
     {
-        scc_pref[i] = scc_pref[i - 1];
-        for (int j = i; j < arr.size(); j += n)
-            if (scc[j] && !found[scc[j]])
-                found[scc[j]] = true, ++scc_pref[i];
+        all_pref[i] += all_pref[i - 1];
+        for (int j = 0; j < 3; ++j)
+            all_pref[i] += arr[i + (j * n)];
     }
+    for (int j = 1; j <= n; ++j)
+    {
+        for (int i = 0; i < 2; ++i)
+            if (arr[j + (i * n)] && arr[j + ((i + 1) * n)] && Unite(j + (i * n), j + ((i + 1) * n)))
+                ++vert_pref[j];
+        for (int i = 0; i < 3; ++i)
+            if (j > 1 && arr[j + (i * n)] && arr[j + (i * n) - 1] && Unite(j + (i * n), j + (i * n) - 1))
+                ++horizon_pref[j - 1];
+    }
+    for (int i = 1; i <= n; ++i)
+        vert_pref[i] += vert_pref[i - 1], horizon_pref[i] += horizon_pref[i - 1];
+    for (int i = n; i > 0; --i)
+        nxt[i - 1] = (arr[i] && !arr[i + n] && arr[i + (2 * n)] ? (nxt[i] + 1) : 0);
 }
 
 void Solve()
 {
-    BuildGraph();
-    for (int v = 1, scc_count = 0; v < graph.size(); ++v)
-        if (!scc[v] && arr[v])
-            SccDfs(v, ++scc_count);
-    CountPrefSum();
+    PreProcess();
     cin >> q;
     for (int qr = 0; qr < q; ++qr)
     {
-        int l, r, to_add = 0;
+        int l, r;
         cin >> l >> r;
-        int used = 0;
-        if (l > 1)
+        --l, --r;
+        int non101 = l + nxt[l];
+        if (non101 > r)
         {
-            for (int v = l; v < arr.size(); v += n)
-            {
-                if (arr[v] && arr[v - 1])
-                {
-                    if (used != scc[v])
-                        ++to_add, used = scc[v];
-                }
-            }
+            cout << "2\n";
+            continue;
         }
-        cout << scc_pref[r] - scc_pref[l - 1] + to_add << '\n';
+        int all = all_pref[r + 1] - all_pref[non101];
+        int joined = (vert_pref[r + 1] - vert_pref[non101]) + (horizon_pref[r] - horizon_pref[non101]);
+        int res = all - joined;
+        if (non101 != l)
+        {
+            if (arr[non101 + 1] && arr[non101 + 1 + n] && arr[non101 + 1 + (2 * n)]);
+            else if (arr[non101 + 1] == '0' && arr[non101 + 1 + n])
+                res += 2;
+            else
+                ++res;
+        }
+        cout << res << '\n';
     }
 }
 
