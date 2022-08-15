@@ -15,17 +15,13 @@ int main()
     for (int i = 1; i < s.size(); ++i)
     {
         while (j != -1 && s[i] != s[j])
-        {
             j = P[j];
-        }
         ++j;
         P[i + 1] = j;
     }
     for (int i = wzorzec.size(); i <= s.size(); ++i)
-    {
         if (P[i] == wzorzec.size())
-            cout << i - 2 * (wzorzec.size()) << '\n';
-    }
+            cout << i - (2 * wzorzec.size()) << '\n';
 
     return 0;
 }
