@@ -16,7 +16,7 @@ string s;
 void Init()
 {
     cin >> s;
-    presuf.resize(s.size() + 10);
+    presuf.resize(2 * s.size() + 10);
 }
 
 void KMP(const string &w)
@@ -43,32 +43,46 @@ bool CheckPattern(int i)
     w[j] = '#';
     w += s;
     KMP(w);
-    for (int j = i + 1; j < w.size(); ++j)
-        if (!presuf[j])
+    if (presuf[2 * i + 1] != i)
+        return false;
+    int z;
+    for (int j = 2 * i + 1; j < w.size(); ++j)
+    {
+        if (presuf[j] == i)
+            z = 0;
+        else if (!((++z) % i) && presuf[j] != i)
             return false;
+    }
     return true;
 }
 
 void Solve()
 {
     KMP(s);
-    sizes.pb(0);
-    for (int i = 0; i <= s.size(); ++i)
-        if (presuf[i] > sizes.back())
-            sizes.pb(presuf[i]);
-    sizes.pop_front();
-    int prev = 0;
-    while(!sizes.empty())
+    int length = presuf[s.size()];
+    for (int i = 0; i < length; ++i)
     {
-        prev = sizes.front();
-        if (CheckPattern(sizes.front()))
+        string w;
+        w.resize(length);
+        for (int j = 0; j < length; ++j)
+            w[j] = s[j];
+        KMP(w);
+        if (presuf[w.size()] == length || presuf[w.size()] == 0)
+            break;
+        sizes.pf(length);
+        length = presuf[w.size()];
+    }
+    int prev = 0;
+    for (int it : sizes)
+    {
+        if (it > (prev * 2) && CheckPattern(it))
         {
-            cout << sizes.front();
+            length = it;
             break;
         }
-        sizes.pop_front();
+        prev = it;
     }
-    cout << '\n';
+    cout << length << '\n';
 }
 
 int main()
