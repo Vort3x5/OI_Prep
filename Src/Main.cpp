@@ -9,80 +9,31 @@ typedef long long ll;
 typedef pair <int, int> p_i;
 typedef vector <int> v_i;
 
-v_i presuf;
-deque <int> sizes;
-string s;
+
+int log_of_l;
+string s, sub1, sub2;
+
+vector <v_i> suf;
 
 void Init()
 {
-    cin >> s;
-    presuf.resize(2 * s.size() + 10);
+    cin >> s >> sub1 >> sub2;
+    log_of_l = int(log2(s.size()) + 1);
+    suf.resize(log_of_l);
+    id.resize(300);
+    for (v_i &vi : suf)
+        vi.resize(s.size() + 1);
 }
 
-void KMP(const string &w)
+void KMR()
 {
-    presuf[0] = -1;
-    presuf[1] = 0;
-    int j = presuf[1];
-    for (int i = 1; i < w.size(); ++i)
-    {
-        while(j != -1 && w[i] != w[j])
-            j = presuf[j];
-        ++j;
-        presuf[i + 1] = j;
-    }
-}
-
-bool CheckPattern(int i)
-{
-    string w;
-    w.resize(i + 1);
-    int j;
-    for (j = 0; j < i; ++j)
-        w[j] = s[j];
-    w[j] = '#';
-    w += s;
-    KMP(w);
-    if (presuf[2 * i + 1] != i)
-        return false;
-    int z;
-    for (int j = 2 * i + 1; j < w.size(); ++j)
-    {
-        if (presuf[j] == i)
-            z = 0;
-        else if (!((++z) % i) && presuf[j] != i)
-            return false;
-    }
-    return true;
+    int j = 1;
+    for (int i = 0; i < s.size(); ++i)
+        suf[0][i] = s[i] - 'a' + 1;
 }
 
 void Solve()
 {
-    KMP(s);
-    int length = presuf[s.size()];
-    for (int i = 0; i < length; ++i)
-    {
-        string w;
-        w.resize(length);
-        for (int j = 0; j < length; ++j)
-            w[j] = s[j];
-        KMP(w);
-        if (presuf[w.size()] == length || presuf[w.size()] == 0)
-            break;
-        sizes.pf(length);
-        length = presuf[w.size()];
-    }
-    int prev = 0;
-    for (int it : sizes)
-    {
-        if (it > (prev * 2) && CheckPattern(it))
-        {
-            length = it;
-            break;
-        }
-        prev = it;
-    }
-    cout << length << '\n';
 }
 
 int main()
