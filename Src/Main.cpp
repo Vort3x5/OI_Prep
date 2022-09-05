@@ -11,6 +11,7 @@ void Init()
 	cin >> n;
 	arr.resize(n);
 	res_up.resize(n);
+	res_down.resize(n);
 	for (int i = 0; i < n; ++i)
 		cin >> arr[i].first >> arr[i].second;
 }
@@ -30,7 +31,9 @@ void Solve()
 			a.first -= res_up[sz_up - 2].first, a.second -= res_up[sz_up - 2].second;
 			c.first -= res_up[sz_up - 2].first, c.second -= res_up[sz_up - 2].second;
 			if (a.first * c.second - a.second * c.first < 0)
-				res_up[sz_up - 2] = res_up[sz_up - 1], --sz_up;
+                res_up[sz_up - 2] = res_up[sz_up - 1], --sz_up; 
+            else
+                break;
 		}
 	}
 	for (int i = 0; i < sz_up; ++i)
@@ -48,6 +51,8 @@ void Solve()
 			c.first -= res_down[sz_down - 2].first, c.second -= res_down[sz_down - 2].second;
 			if (a.first * c.second - a.second * c.first < 0)
 				res_down[sz_down - 2] = res_down[sz_down - 1], --sz_down;
+            else
+                break;
 		}
 	}
 	for (int i = 0; i < sz_down; ++i)
