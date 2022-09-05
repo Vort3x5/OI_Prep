@@ -1,80 +1,57 @@
 #include <bits/stdc++.h>
 
-#define pb push_back
-#define pf push_front
-#define M  1696969
-
 using namespace std;
 
-typedef long long ll;
-typedef unsigned long long u64;
-typedef long long s64;
-typedef pair <int, int> p_i;
-typedef vector <int> v_i;
-typedef vector <u64> v_u64;
+int n, sz_up, sz_down;
 
-int n, t, lfs, l, p = 29;
-string s1, s2;
-
-v_u64 pows, s1_tree, s2_tree;
-
-inline u64 CountHash(int i, const string &s)
-{
-    return (pows[i] * (s[i] - 'a' + 1)) % (u64)M;
-}
-void Insert(int v, s64 val, v_u64 &tree)
-{
-    tree[v] += val;
-    while (v /= 2)
-        tree[v] = tree[v * 2] + tree[(v * 2) + 1] % (u64)M;
-}
+vector <pair <int, int>> arr, res_up, res_down;
 
 void Init()
 {
-    cin >> n >> s1 >> s2;
-    lfs = 1 << (int(log2(n)) + 1);
-    l = lfs - 1;
-    s1_tree.resize(2 * lfs);
-    s2_tree.resize(2 * lfs);
-    pows.resize(n + 10);
-    pows[0] = 1;
-    for (int i = 1; i <= n; ++i)
-        pows[i] = (pows[i - 1] * p) % (u64)M;
-    for (int i = 0; i < n; ++i)
-    {
-        Insert(i + lfs, CountHash(i, s1), s1_tree);
-        Insert(i + lfs, CountHash(i, s2), s2_tree);
-    }
-}
-
-inline s64 RecountHash(int pos, int prev, int s_new)
-{
-    return ((s_new - prev) * pows[pos]);
-}
-
-u64 Query(int v = 1, int a = 1, int b = lfs)
-{
-    if (v >= lfs)
-        return (s1_tree[v] == s2_tree[v] ? 0 : s1_tree[v] > s2_tree[v] ? 1 : 2);
-    else
-    {
-        int mid = (a + b) / 2;
-        return (s1_tree[v * 2] != s2_tree[v * 2] ? Query(v * 2, a, mid) : Query((v * 2) + 1, mid + 1, b));
-    }
+	cin >> n;
+	arr.resize(n);
+	res_up.resize(n);
+	for (int i = 0; i < n; ++i)
+		cin >> arr[i].first >> arr[i].second;
 }
 
 void Solve()
 {
-    cin >> t;
-    for (int q = 0; q < t; ++q)
-    {
-        int i, j;
-        cin >> i >> j;
-        swap(s1[i], s2[j]);
-        Insert(i + lfs, RecountHash(i, s2[j], s1[i]), s1_tree);
-        Insert(j + lfs, RecountHash(j, s1[i], s2[j]), s2_tree);
-        cout << Query() << '\n';
-    }
+	sort(arr.begin(), arr.end());
+	res_up[0] = arr[0];
+	res_up[1] = arr[1];
+    sz_up = 2;
+	for (int i = 2; i < n; ++i)
+	{
+		res_up[sz_up++] = arr[i];
+		while (sz_up > 2)
+		{
+			pair <int, int> a = res_up[sz_up - 3], c = res_up[sz_up - 1];
+			a.first -= res_up[sz_up - 2].first, a.second -= res_up[sz_up - 2].second;
+			c.first -= res_up[sz_up - 2].first, c.second -= res_up[sz_up - 2].second;
+			if (a.first * c.second - a.second * c.first < 0)
+				res_up[sz_up - 2] = res_up[sz_up - 1], --sz_up;
+		}
+	}
+	for (int i = 0; i < sz_up; ++i)
+		cout << res_up[i].first << ' ' << res_up[i].second << '\n';
+    res_down[0] = arr[n - 1];
+    res_down[1] = res_up[sz_up - 1];
+    sz_down = 2;
+	for (int i = 2; i < n; ++i)
+	{
+		res_down[sz_down++] = arr[i];
+		while (sz_down > 2)
+		{
+			pair <int, int> a = res_down[sz_down - 3], c = res_down[sz_down - 1];
+			a.first -= res_down[sz_down - 2].first, a.second -= res_down[sz_down - 2].second;
+			c.first -= res_down[sz_down - 2].first, c.second -= res_down[sz_down - 2].second;
+			if (a.first * c.second - a.second * c.first < 0)
+				res_down[sz_down - 2] = res_down[sz_down - 1], --sz_down;
+		}
+	}
+	for (int i = 0; i < sz_down; ++i)
+		cout << res_down[i].first << ' ' << res_down[i].second << '\n';
 }
 
 int main()
@@ -82,8 +59,8 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    Init();
-    Solve();
+	Init();
+	Solve();
 
-    return 0;
+	return 0;
 }
