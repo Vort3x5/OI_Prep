@@ -41,7 +41,7 @@ void Solve()
     res_down[0] = arr[n - 1];
     res_down[1] = res_up[sz_up - 1];
     sz_down = 2;
-	for (int i = 2; i < n; ++i)
+	for (int i = n - 1; i > 1; --i)
 	{
 		res_down[sz_down++] = arr[i];
 		while (sz_down > 2)
@@ -55,7 +55,7 @@ void Solve()
                 break;
 		}
 	}
-	for (int i = 0; i < sz_down; ++i)
+	for (int i = 1; i < sz_down - 1; ++i)
 		cout << res_down[i].first << ' ' << res_down[i].second << '\n';
 }
 
