@@ -1,62 +1,90 @@
 #include <bits/stdc++.h>
 
+#define pb push_back
+#define ppb pop_back
+#define pf push_front
+#define ppf pop_back
+
 using namespace std;
 
-int n, sz_up, sz_down;
+typedef int s32;
+typedef unsigned int u32;
+typedef long long s64;
+typedef unsigned long long u64;
+typedef pair <int, int> p_i;
+typedef pair <s64, s64> p_ll;
+typedef vector <int> v_i;
+typedef vector <s64> v_ll;
 
-vector <pair <int, int>> arr, res_up, res_down;
+s32 T, N;
 
-void Init()
+pair <bool, s32> sieve[20000010];
+int sigma[20000010];
+bitset <20000010> res;
+
+inline void Init()
 {
-	cin >> n;
-	arr.resize(n);
-	res_up.resize(n);
-	res_down.resize(n);
-	for (int i = 0; i < n; ++i)
-		cin >> arr[i].first >> arr[i].second;
+    cin >> N;
+}
+
+void EraSieve()
+{
+    for (int i = 2; i <= 20000000; ++i)
+    {
+        if (sieve[i].first)
+            continue;
+
+        for (int j = (i * 2); j <= 20000000; j += i)
+            sieve[j].first = true, sieve[j].second = i;
+    }
+}
+
+void Sigma()
+{
+    sigma[1] = 1;
+    for (int i = 2; i <= 20000000; ++i)
+    {
+        if (!sieve[i].first)
+        {
+            sigma[i] = 2;
+            continue;
+        }
+        int x = i;
+        while (!(x % sieve[i].second))
+        {
+            ++sigma[i];
+            x /= sieve[i].second;
+        }
+        ++sigma[i];
+        sigma[i] *= sigma[x];
+    }
+}
+
+void CountRes()
+{
+    res[0] = false;
+    res[1] = true;
+    int last_lost = 0;
+    for (int i = 2; i <= 20000000; ++i)
+        res[i] = i - sigma[i] <= last_lost, last_lost += res[i] * i - last_lost * res[i];
+}
+
+inline void PreProcess()
+{
+    EraSieve();
+    Sigma();
+    CountRes();
 }
 
 void Solve()
 {
-	sort(arr.begin(), arr.end());
-	res_up[0] = arr[0];
-	res_up[1] = arr[1];
-    sz_up = 2;
-	for (int i = 2; i < n; ++i)
-	{
-		res_up[sz_up++] = arr[i];
-		while (sz_up > 2)
-		{
-			pair <int, int> a = res_up[sz_up - 3], c = res_up[sz_up - 1];
-			a.first -= res_up[sz_up - 2].first, a.second -= res_up[sz_up - 2].second;
-			c.first -= res_up[sz_up - 2].first, c.second -= res_up[sz_up - 2].second;
-			if (a.first * c.second - a.second * c.first < 0)
-                res_up[sz_up - 2] = res_up[sz_up - 1], --sz_up; 
-            else
-                break;
-		}
-	}
-	for (int i = 0; i < sz_up; ++i)
-		cout << res_up[i].first << ' ' << res_up[i].second << '\n';
-    res_down[0] = arr[n - 1];
-    res_down[1] = res_up[sz_up - 1];
-    sz_down = 2;
-	for (int i = n - 1; i > 1; --i)
-	{
-		res_down[sz_down++] = arr[i];
-		while (sz_down > 2)
-		{
-			pair <int, int> a = res_down[sz_down - 3], c = res_down[sz_down - 1];
-			a.first -= res_down[sz_down - 2].first, a.second -= res_down[sz_down - 2].second;
-			c.first -= res_down[sz_down - 2].first, c.second -= res_down[sz_down - 2].second;
-			if (a.first * c.second - a.second * c.first < 0)
-				res_down[sz_down - 2] = res_down[sz_down - 1], --sz_down;
-            else
-                break;
-		}
-	}
-	for (int i = 1; i < sz_down - 1; ++i)
-		cout << res_down[i].first << ' ' << res_down[i].second << '\n';
+    cin >> T;
+    PreProcess();
+    for (int qr = 0; qr < T; ++qr)
+    {
+        Init();
+        cout << (res[N] ? "Ada\n" : "Vinit\n");
+    }
 }
 
 int main()
@@ -64,8 +92,8 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
-	Init();
-	Solve();
+    Solve();
 
-	return 0;
+    return 0;
 }
+
