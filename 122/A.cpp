@@ -1,23 +1,26 @@
 #include <bits/stdc++.h>
+
 #define pb push_back
+#define ppb pop_back
 #define pf push_front
+#define ppf pop_back
 
 using namespace std;
 
-typedef long long ll;
+typedef int s32;
+typedef unsigned int u32;
+typedef long long s64;
+typedef unsigned long long u64;
 typedef pair <int, int> p_i;
+typedef pair <s64, s64> p_ll;
 typedef vector <int> v_i;
+typedef vector <s64> v_ll;
 
 int t, n;
-
-v_i cnt;
 
 void Init()
 {
     cin >> n;
-    cnt.resize(n);
-    for (auto &i : cnt)
-        cin >> i;
 }
 
 void Solve()
@@ -26,7 +29,15 @@ void Solve()
     for (int qr = 0; qr < t; ++qr)
     {
         Init();
-        cout << max_element(cnt.begin(), cnt.end()) - cnt.begin()  + 1 << '\n';
+        if (!(n % 7))
+        {
+            cout << n << '\n';
+            continue;
+        }
+        n -= (n % 10);
+        while (n % 7)
+            ++n;
+        cout << n << '\n';
     }
 }
 
@@ -34,8 +45,9 @@ int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
-    
+
     Solve();
 
     return 0;
 }
+
