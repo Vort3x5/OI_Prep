@@ -26,6 +26,9 @@ void Init()
 
 inline u64 BinMultiply(u64 x, u64 y)
 {
+    if (y == 0)
+        return 0;
+    
     if (y % 2)
         return (x + BinMultiply(x, y - 1));
     return (2 * BinMultiply(x, y / 2));
@@ -42,7 +45,7 @@ inline u64 BinPower(u64 x, u64 y)
     return z * z;
 }
 
-bool IsPrime(int n, int it)
+bool IsPrime(s32 n, s32 it)
 {
     if (n < 4)
         return n == 2 || n == 3;
@@ -51,7 +54,7 @@ bool IsPrime(int n, int it)
     
     for (s32 i = 0; i < it; ++i)
     {
-        int x = 2 + rand() % (n - 3);
+        s32 x = 2 + rand() % (n - 3);
         if (BinPower(x, n - 1) != 1)
             return false;
     }
@@ -64,11 +67,11 @@ void Solve()
     for (s32 qr = 0; qr < t; ++qr)
     {
         Init();
-        cout << (IsPrime(N, 10) ? "YES\n" : "NO\n");
+        cout << (IsPrime(N, 5) ? "YES\n" : "NO\n");
     }
 }
 
-int main()
+s32 main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
