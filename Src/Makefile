@@ -1,8 +1,8 @@
-out: Main.o
-	g++ Main.o -o out
+out: main.o
+	g++ main.o -o out
 
-Main.o: Main.cpp
-	g++ -g -c -std=c++17 Main.cpp
+main.o: main.cpp
+	g++ -g -c -std=c++17 main.cpp
 
 clean:
 	rm *.o out
