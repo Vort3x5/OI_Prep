@@ -16,38 +16,39 @@ typedef pair <s64, s64> p_ll;
 typedef vector <int> v_i;
 typedef vector <s64> v_ll;
 
-s32 n, s, res;
+s32 n, res = 100000, curr_res;
 
-v_i arr, answ, cnt;
-
-bool cmp(p_i lhs, p_i rhs)
-    { return lhs.first >= rhs.first; }
-
-priority_queue <p_i, vector <p_i>, decltype(&cmp)> ord;
+v_ll arr;
 
 void Init()
 {
-    cin >> n >> s;
+    cin >> n;
     arr.resize(n);
-    cnt.resize(s + 10);
-    for (s32 &i : arr)
-    {
+    for (s64 &i : arr)
         cin >> i;
-        i = (i + 1) % s;
-        ++cnt[i + 1];
-    }
 }
 
 void Solve()
 {
-    s32 w = 0;
-    cout << res << '\n';
-    while (!ord.empty())
+    if (arr[0] == arr[1])
     {
+        arr[1] = arr[0] - 1;
+        ++curr_res;
     }
-    for (s32 &i : answ)
-        cout << i << ' ';
-    cout << '\n';
+    s64 prev = arr[1];
+    for (s32 i = 2; i < n; ++i)
+    {
+        if (arr[i - 2] < arr[i - 1] && arr[i] >= arr[i - 1])
+        {
+            arr[i] = arr[i - 1] - 1;
+            ++curr_res;
+        }
+        else if (arr[i - 2] < arr[i - 1] && arr[i] >= arr[i - 1])
+        {
+            arr[i] = arr[i - 1] + 1;
+            ++curr_res;
+        }
+    }
 }
 
 int main()
@@ -60,3 +61,4 @@ int main()
 
     return 0;
 }
+
