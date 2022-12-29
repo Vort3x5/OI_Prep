@@ -16,32 +16,90 @@ typedef pair <s64, s64> p64;
 typedef vector <int> v32;
 typedef vector <s64> v64;
 
-s32 n, m, v1[1000010], v2[1000010];
-u64 sum;
+u64 n, m, v1[2000010], v2[2000010], arr1[20], arr2[20], k1, k2;
 
-v32 arr;
-unordered_map m1, m2;
+vector <bool> mask;
+unordered_map <u64, s32> m1, m2;
 
 void Init()
 {
     cin >> n;
-    arr.resize(n);
-    for (s32 &i : arr)
-    {
-        cin >> i;
-        sum += i;
-    }
+    for (s32 i = 0; i < n && i < 20; ++i)
+        cin >> arr1[i];
+    for (s32 i = 20; i < n && i < 40; ++i)
+        cin >> arr2[i];
     cin >> m;
 }
 
 void Solve()
 {
-    for (s32 i = 0; i < ( s32(log2(sum) + 1) / 2 ); ++i)
+    for (u64 i = 0; i < (1 << 20); ++i)
     {
+        u64 j = i;
+        while (j)
+        {
+            mask.pb(j % 2);
+            j /= 2;
+        }
+        for (u64 bit = 0; bit < mask.size(); ++bit)
+            v1[i] += (mask[bit] * arr1[bit]);
+        mask.clear();
+        m1[v1[i]] = i;
     }
-    
-    for (s32 i = ( s32(log2(sum) + 1) / 2 ); i < (s32(log2(sum) + 1); ++i)
+    for (u64 i = 0; i < (1 << 20); ++i)
     {
+        u64 j = i;
+        while (j)
+        {
+            mask.pb(j % 2);
+            j /= 2;
+        }
+        for (u64 bit = 0; bit < mask.size(); ++bit)
+            v2[i] += (mask[bit] * arr2[bit]);
+        mask.clear();
+        m2[v2[i]] = i;
+    }
+
+    for (auto const & [key, val] : m1)
+    {
+        if (key == m)
+        {
+            k1 = key;
+            break;
+        }
+        else if (m2[m - key])
+        {
+            k1 = key;
+            k2 = m - key;
+            break;
+        }
+    }
+
+    if (!k2)
+    {
+        s32 l = (s32)log2(m1[k1]) + 1;
+        for (s32 i = 0; i < (n - l); ++i)
+            cout << 0;
+        u64 res = m1[k1];
+        while (res)
+        {
+            cout << res % 2;
+            res /= 2;
+        }
+        cout << '\n';
+    }
+    else
+    {
+        s32 l = ((s32)log2(m1[k1]) + 1) + ((s32)log2(m2[k2]) + 1);
+        for (s32 i = 0; i < (n - l); ++i)
+            cout << 0;
+        u64 res = m1[k1];
+        while (res)
+        {
+            cout << res % 2;
+            res /= 2;
+        }
+        cout << '\n';
     }
 }
 
@@ -55,4 +113,3 @@ int main()
 
     return 0;
 }
-
