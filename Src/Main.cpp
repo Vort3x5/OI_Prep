@@ -22,7 +22,7 @@ bool cmp(p32 lhs, p32 rhs)
 s32 n, m;
 u64 res;
 
-vector <p32> parent;
+vector <s32> parent;
 vector <vector <p32>> graph, mst;
 priority_queue <p32, vector <p32>, decltype(&cmp)> trl;
 bitset <1000010> vis;
@@ -60,45 +60,36 @@ void BFS(s32 v)
     for (p32 &edge : graph[v])
         if (!vis[Find(edge.first)])
             trl.push(edge);
-    p32 p = trl.top();
-    mst[v].pb(p);
-    mst[p.first].pb({ v, p.second });
-    Union(v, p.first);
+    p32 e = trl.top();
+    mst[v].pb(e);
+    mst[e.first].pb({ v, e.second });
+    Union(Find(v), e.first);
     trl = priority_queue <p32, vector <p32>, decltype(&cmp)> ();
-    BFS(p.first);
-}
-
-void MstDfs(s32 v)
-{
-    vis[v] = false;
-    for (p32 &edge : mst[v])
-    {
-        if (vis[edge.first])
-            MstDfs(edge.first);
-        else
-        {
-            for (p32 &e : graph[v])
-            {
-            }
-        }
-    }
+    BFS(e.first);
 }
 
 void MST(s32 v)
 {
-}
-
-void DFS(s32 v)
-{
-    vis[v] = true;
-    for (p32 &edge : mst[v])
+    vis[v] = false;
+    for (p32 &edge : graph[v])
     {
-        if (!vis[edge.first])
+        if (Find(edge.first) != Find(v))
+        {
+            trl.push(edge);
+            vis[edge.first] = false;
+        }
+        else
         {
             res += edge.second;
-            DFS(edge.first);
+            MST(edge.first);
         }
     }
+    p32 e = trl.top();
+    Union(Find(v), Find(e.first));
+    mst[v].pb(e);
+    mst[e.first].pb({ v, e.second });
+    res += e.second;
+    MST(e.first);
 }
 
 void Solve()
@@ -109,8 +100,13 @@ void Solve()
             BFS(v);
         trl = priority_queue <p32, vector <p32>, decltype(&cmp)> ();
     }
-    MST(1);
-    DFS(1);
+
+    for (s32 v = 1; v <= n; ++v)
+    {
+        if (vis[v])
+            MST(v);
+        trl = priority_queue <p32, vector <p32>, decltype(&cmp)> ();
+    }
     cout << res << '\n';
 }
 
