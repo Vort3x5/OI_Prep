@@ -67,7 +67,7 @@ void Solve()
             k1 = key;
             break;
         }
-        else if (m2[m - key])
+        else if (m2.count(m - key))
         {
             k1 = key;
             k2 = m - key;
@@ -80,27 +80,26 @@ void Solve()
         s32 l = (s32)log2(m1[k1]) + 1;
         for (s32 i = 0; i < (n - l); ++i)
             cout << 0;
-        u64 res = m1[k1];
-        while (res)
-        {
-            cout << res % 2;
-            res /= 2;
-        }
-        cout << '\n';
     }
     else
     {
         s32 l = ((s32)log2(m1[k1]) + 1) + ((s32)log2(m2[k2]) + 1);
         for (s32 i = 0; i < (n - l); ++i)
             cout << 0;
-        u64 res = m1[k1];
+        u64 res = m2[k2];
         while (res)
         {
             cout << res % 2;
             res /= 2;
         }
-        cout << '\n';
     }
+    u64 res = m1[k1];
+    while (res)
+    {
+        cout << res % 2;
+        res /= 2;
+    }
+    cout << '\n';
 }
 
 int main()
