@@ -17,10 +17,9 @@ typedef vector <s32> v32;
 typedef vector <s64> v64;
 
 bool cmp(p32 lhs, p32 rhs)
-    { return (lhs.second < rhs.second); }
+    { return (lhs.second > rhs.second); }
 
 s32 n, m;
-u64 res;
 
 vector <s32> parent;
 vector <p32> dist;
@@ -34,12 +33,13 @@ void Init()
     graph.resize(m + 10);
     mst.resize(m + 10);
     parent.resize(n + 10);
-    dist.resize(n + 10, 1000000010);
+    dist.resize(n + 10, {0, 1000010});
     for (s32 i = 0; i < m; ++i)
     {
         s32 src, dest, w;
         cin >> src >> dest >> w;
         graph[src].pb({ dest, w });
+        graph[dest].pb({ src, w });
     }
     for (s32 v = 1; v <= n; ++v)
         parent[v] = v;
@@ -73,22 +73,46 @@ void BFS(s32 v)
         BFS(e.first);
 }
 
-void MST(s32 v)
+void MST()
 {
-    while ()
+    bool merged = false;
+    while (!merged)
     {
         for (s32 v = 1; v <= n; ++v)
         {
             for (p32 &edge : graph[v])
-                if (Find(v) != Find(edge.first) && edge.second < dist[Find(edge.first)])
-                    dist[Find(v)] = edge.second;
+                if (Find(v) != Find(edge.first) && edge.second < dist[Find(v)].second)
+                    dist[Find(v)] = edge;
+        }
+        for (s32 v = 1; v <= n; ++v)
+        {
+            if (dist[Find(v)].first)
+            {
+                Union(Find(v), Find(dist[Find(v)].first));
+                mst[v].pb(dist[Find(v)]);
+            }
+        }
+        dist.resize(n + 10, {0, 1000010});
+        s32 allfather = Find(1);
+        merged = true;
+        for (s32 v = 2; v <= n; ++v)
+        {
+            if (Find(v) != allfather)
+            {
+                merged = false;
+                break;
+            }
         }
     }
-    for (s32 v = 1; v <= n; ++v)
-    {
-        if (dist[Find(v)] != 1000000010)
-            Union();
-    }
+}
+
+u64 DFS(s32 v = 1, u64 res = 0)
+{
+    vis[v] = false;
+    for (p32 &edge : mst[v])
+        if (vis[edge.first])
+            res += edge.second + DFS(edge.first);
+    return res;
 }
 
 void Solve()
@@ -100,13 +124,8 @@ void Solve()
         trl = priority_queue <p32, vector <p32>, decltype(&cmp)> ();
     }
 
-    for (s32 v = 1; v <= n; ++v)
-    {
-        if (vis[v])
-            MST(v);
-        trl = priority_queue <p32, vector <p32>, decltype(&cmp)> ();
-    }
-    cout << res << '\n';
+    MST();
+    cout << DFS() << '\n';
 }
 
 int main()
