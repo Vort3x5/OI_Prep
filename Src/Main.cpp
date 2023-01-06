@@ -24,7 +24,7 @@ void Insert(v_ll &tree, int v, int x = 1)
 
 void Init()
 {
-    scanf("%lld", &n);
+    cin >> n;
     lfs = 1 << int(log2(n - 1) + 1);
     l = lfs - 1;
     arr.resize(n);
@@ -34,7 +34,7 @@ void Init()
     dec_tree.resize(2 * lfs);
     for (int i = 0; i < n; ++i)
     {
-        scanf("%lld", &arr[i]);
+        cin >> arr[i];
         sorted[i].first = arr[i];
         sorted[i].second = i;
     }
@@ -65,7 +65,7 @@ void Solve()
 
     for (int node = 1; node <= n; ++node)
         res = max(res, Query(inc_tree, 1, node) + Query(dec_tree, node, lfs) - 1);
-    printf("%lld\n", n - res);
+    cin >> n - res;
 }
 
 int main()
