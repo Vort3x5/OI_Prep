@@ -16,7 +16,7 @@ typedef pair <s64, s64> p64;
 typedef vector <int> v32;
 typedef vector <s64> v64;
 
-u64 n, m, v1[2000010], v2[2000010], arr1[20], arr2[20], k1, k2;
+u64 n, m, v1[2000010], v2[2000010], arr1[20], arr2[20], k1 = 0, k2 = 0;
 
 vector <bool> mask;
 unordered_map <u64, s32> m1, m2;
