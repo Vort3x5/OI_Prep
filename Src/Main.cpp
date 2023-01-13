@@ -1,133 +1,109 @@
 #include <bits/stdc++.h>
 
 #define pb push_back
+#define ppb pop_back
 #define pf push_front
-#define stc sub_tree_count
+#define ppf pop_back
 
 using namespace std;
 
-typedef long long ll;
-typedef pair <int, int> p_i;
-typedef vector <int> v_i;
+typedef int s32;
+typedef unsigned int u32;
+typedef long long s64;
+typedef unsigned long long u64;
+typedef pair <int, int> p32;
+typedef pair <s64, s64> p64;
+typedef vector <s32> v32;
+typedef vector <s64> v64;
 
-struct Edge
-{
-    vector <int> dest;
-    bool destroyed = false;
-    int dfs_vis;
-    int sub_tree_count = 1;
-};
+#define stc sub_tree_count
 
-int n, k, curr = 1;
+s32 n, k, curr = 1, r;
 
-vector <Edge> graph;
-v_i res;
-v_i sres;
+vector <v32> graph;
+bitset <1000010> vand;
+v32 sub_tree_count, res, vis;
 
 void Init()
 {
-    scanf("%d%d", &n, &k);
+    cin >> n >> k;
     graph.resize(n + 10);
     res.resize(n + 10);
-    sres.resize(n + 10);
-    for (int i = 0; i < (n - 1); ++i)
+    vis.resize(n + 10);
+    stc.resize(n + 10, 1);
+    for (s32 i = 0; i < (n - 1); ++i)
     {
-        int v, u;
-        scanf("%d%d", &v, &u);
-        graph[v].dest.pb(u);
-        graph[u].dest.pb(v);
+        s32 src, dest;
+        cin >> src >> dest;
+        graph[src].pb(dest);
+        graph[dest].pb(src);
     }
 }
 
-void Dfs(int node, int dist = 0)
+s32 DFS(s32 v = 1, s32 dist = 0)
 {
+    vis[v] = curr;
     ++res[dist];
-    graph[node].dfs_vis = curr;
-    for (auto &v : graph[node].dest)
+    for (s32 &e : graph[v])
     {
-        if (graph[v].dfs_vis != curr)
-            Dfs(v, dist + 1);
+        if (vis[e] != curr && !vand[e])
+            stc[v] += DFS(e, dist + 1);
     }
+    return stc[v];
 }
 
-void sDfs(int node, int dist = 1)
+s32 CentreDFS(s32 v, s32 dist = 0)
 {
-    --res[dist];
-    ++sres[dist];
-    graph[node].dfs_vis = curr;
-    for (auto &v : graph[node].dest)
-    {
-        if (graph[v].dfs_vis != curr)
-            Dfs(v, dist + 1);
-    }
 }
 
-int CentroidDfs(int v)
+s32 FindCentroid(s32 v)
 {
-    graph[v].dfs_vis = curr;
-    for (auto node : graph[v].dest)
+    vis[v] = curr;
+    for (s32 &e : graph[v])
     {
-        if (graph[node].dfs_vis != curr && !graph[node].destroyed)
-            graph[v].stc += CentroidDfs(node);
-    }
-    return graph[v].stc;
-}
-
-int FindCentroid(int node)
-{
-    for (auto &v : graph[node].dest)
-    {
-        if (graph[v].dfs_vis != curr && (graph[v].stc > (graph[node].stc / 2)))
+        if (vis[e] != curr && !vand[e] && stc[e] > (stc[v] / 2))
         {
-            graph[node].stc -= graph[v].stc;
-            graph[v].stc += graph[node].stc;
+            stc[v] -= stc[e];
+            stc[e] += stc[v];
+            return e;
         }
     }
-    return node;
+    return v;
 }
 
-int CentroidDecomposition(int v)
+void Calc(s32 v, s32 dist = 0)
 {
-    CentroidDfs(v);
+}
+
+s32 Decomp(s32 v)
+{
     ++curr;
-    int centroid = FindCentroid(v);
-    int r = 0;
-    graph[centroid].destroyed = true;
-    Dfs(centroid);
+    s32 centroid = FindCentroid(v);
     ++curr;
-    for (int i = 0; i < graph[centroid].dest.size(); ++i)
-    {
-        if (!graph[graph[centroid].dest[i]].destroyed)
-        {
-            sDfs(graph[centroid].dest[i]);
-            for (int i = 1; i <= k; ++i)
-            {
-                if (!sres[i])
-                    break;
-                r += sres[i] * res[k - i];
-                sres[i] = 0;
-            }
-        }
-    }
-    res[0] = 0;
+    vand[centroid] = true;
+    DFS(centroid);
     ++curr;
-    for (int i = 0; i < graph[centroid].dest.size(); ++i)
-    {
-        if (!graph[graph[centroid].dest[i]].destroyed)
-            r += CentroidDecomposition(graph[centroid].dest[i]);
-    }
+    Calc(centroid);
+    for (s32 &e : graph[centroid])
+        if (!vand[e])
+            r += Decomp(e);
     return r;
 }
 
 void Solve()
 {
-    printf("%d", CentroidDecomposition(1));
+    DFS();
+    cout << Decomp(1) << '\n';
 }
 
 int main()
 {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+
     Init();
     Solve();
 
     return 0;
 }
+
