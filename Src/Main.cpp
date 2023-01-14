@@ -26,7 +26,7 @@ void Init()
     cin >> n;
     for (s32 i = 0; i < n && i < 20; ++i)
         cin >> arr1[i];
-    for (s32 i = 20; i < n && i < 40; ++i)
+    for (s32 i = 0; i < (n - 20) && i < 20; ++i)
         cin >> arr2[i];
     cin >> m;
 }
@@ -74,7 +74,7 @@ void Solve()
             break;
         }
     }
-
+/*
     if (!k2)
     {
         s32 l = (s32)log2(m1[k1]) + 1;
@@ -100,6 +100,10 @@ void Solve()
         res /= 2;
     }
     cout << '\n';
+*/
+
+    for (s32 i = 0; i < 20; ++i)
+
 }
 
 int main()
