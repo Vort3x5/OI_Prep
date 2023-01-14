@@ -1,135 +1,158 @@
 #include <bits/stdc++.h>
 
 #define pb push_back
+#define ppb pop_back
 #define pf push_front
+#define ppf pop_back
 
 using namespace std;
 
-typedef long long ll;
-typedef pair <int, int> p_i;
-typedef vector <int> v_i;
+typedef int s32;
+typedef unsigned int u32;
+typedef long long s64;
+typedef unsigned long long u64;
+typedef pair <int, int> p32;
+typedef pair <s64, s64> p64;
+typedef vector <s32> v32;
+typedef vector <s64> v64;
 
 #define stc sub_tree_count
 
-struct Edge
-{
-    vector <p_i> dest;
-};
+s32 t, n, curr = 1, l, lfs, pre = 1;
 
-int t, N, curr_pos, res, l, lfs;
-
-vector <Edge> graph;
-v_i parent, depth, heavy, head, pos, tree, dist;
+vector <vector <p32>> graph;
+v32 vis, sub_tree_count, head, depth, tree, pos, parent, id;
 
 void Init()
 {
-    cin >> N;
-    lfs = 1 << int(log2(N) + 1);
+    cin >> n;
+    lfs = (1 << (int(log2(n + 1)) + 1));
     l = lfs - 1;
-    graph.resize(N + 10);
-    tree = v_i(2 * lfs, 0);
-    parent = v_i(N + 10, 0);
-    dist = v_i(N + 10, 0);
-    depth = v_i(N + 10, 0);
-    heavy = v_i(N + 10, -1);
-    head = v_i(N + 10, 0);
-    pos = v_i(N + 10, 0);
-    curr_pos = 0;
-    for (int i = 1; i < N; ++i)
+    graph.resize(n + 10);
+    vis.resize(n + 10);
+    id.resize(n + 10);
+    stc.resize(n + 10, 1);
+    head.resize(n + 10);
+    parent.resize(n + 10);
+    depth.resize(n + 10);
+    pos.resize(n + 10);
+    tree.resize(lfs * 2);
+    for (s32 i = 0; i < (n - 1); ++i)
     {
-        int a, b, c;
-        cin >> a >> b >> c;
-        graph[a].dest.pb({b, c});
-        graph[b].dest.pb({a, c});
+        s32 src, dest, w;
+        cin >> src >> dest >> w;
+        graph[src].pb({dest, w});
+        graph[dest].pb({src, w});
+        id[i] = dest;
     }
+    parent[1] = 1;
+    stc[0] = 0;
 }
 
-int Dfs(int w, int v = 1)
+inline void Insert(s32 node, s32 val)
 {
-    int size = 1, max_node_size = 0;
-    dist[v] = w;
-    for (auto node : graph[v].dest)
-    {
-        if (node.first != parent[v])
-        {
-            parent[node.first] = v, depth[node.first] = depth[v] + 1;
-            int node_size = Dfs(node.second, node.first);
-            size += node_size;
-            if (node_size > max_node_size)
-                max_node_size = node_size, heavy[v] = node.first;
-        }
-    }
-    return size;
+    tree[node] = val;
+    while (node /= 2)
+        tree[node] = max(tree[node * 2], tree[node * 2 + 1]);
 }
 
-void Insert(int v, int x)
+s32 Query(s32 qa, s32 qb, s32 ta = 1, s32 tb = lfs, s32 node = 1)
 {
-    tree[v] = x;
-    for (v /= 2; v; v /= 2)
-        tree[v] = max(tree[v * 2], tree[(v * 2) + 1]);
-}
-
-int Query(int q_a, int q_b, int v = 1, int t_a = 1, int t_b = lfs)
-{
-    if (t_a > q_b || t_b < q_a)
+    if (ta > qb || tb < qa)
         return 0;
-    else if (t_a >= q_a && t_b <= q_b)
-        return tree[v];
+    else if (ta >= qa && tb <= qb)
+        return tree[node];
     else
     {
-        int mid = (t_a + t_b) / 2;
-        return max(Query(q_a, q_b, v * 2, t_a, mid), Query(q_a, q_b, (v * 2) + 1, mid + 1, t_b));
+        s32 mid = (ta + tb) / 2;
+        return max(Query(qa, qb, ta, mid, node * 2), Query(qa, qb, mid + 1, tb, node * 2 + 1));
     }
 }
 
-void Decompose(int v = 1, int h = 1)
+s32 InitCount(s32 v = 1, s32 d = 1, s32 w = 0)
 {
-    head[v] = h, pos[v] = curr_pos++;
-    Insert(curr_pos + l, dist[v]);
-    if (heavy[v] != -1)
-        Decompose(heavy[v], h);
-    for (p_i node : graph[v].dest)
+    vis[v] = curr;
+    depth[v] = d;
+    pos[v] = pre++;
+    Insert(pos[v] + l, w);
+    for (p32 &e : graph[v])
     {
-        if (node.first != parent[v] && node.first != heavy[v])
-            Decompose(node.first, node.first);
+        if (vis[e.first] != curr)
+        {
+            stc[v] += InitCount(e.first, d + 1, e.second);
+            parent[e.first] = v;
+        }
+    }
+
+    return stc[v];
+}
+
+void Decomp(s32 v = 1, s32 h = 1)
+{
+    head[v] = h;
+    vis[v] = curr;
+    s32 heavy = 0;
+    for (p32 &e : graph[v])
+        if (vis[e.first] != curr && stc[heavy] < stc[e.first])
+            heavy = e.first;
+
+    for (p32 &e : graph[v])
+    {
+        if (vis[e.first] != curr && e.first == heavy)
+            Decomp(e.first, h);
+        else if (vis[e.first] != curr)
+            Decomp(e.first, e.first);
     }
 }
 
-int HldQr(int v, int u)
+s32 HldQr(s32 a, s32 b)
 {
-    res = 0;
-    for (; head[v] != head[u]; u = parent[head[u]])
+    s32 res = 0;
+    while (head[a] != head[b])
     {
-        if (depth[head[v]] > depth[head[u]])
-            swap(v, u);
-    res = max(res, Query(pos[head[u]] + 1, pos[u] + 1));
+        if (depth[head[a]] > depth[head[b]])
+        {
+            res = max(res, Query(pos[head[a]], pos[a]));
+            a = parent[head[a]];
+        }
+        else
+        {
+            res = max(res, Query(pos[head[b]], pos[b]));
+            b = parent[head[b]];
+        }
     }
-    if (depth[v] > depth[u])
-        swap(v, u);
-    res = max(res, Query(pos[v] + 1, pos[u] + 1));
+    if (pos[a] < pos[b])
+        res = max(res, Query(pos[a], pos[b]));
+    else
+        res = max(res, Query(pos[b], pos[a]));
     return res;
 }
 
 void Solve()
 {
     cin >> t;
-    for (int i = 0; i < t; ++i)
+    for (s32 qr = 0; qr < t; ++qr)
     {
         Init();
-        Dfs(0);
-        Decompose();
-        string qr;
-        int a, b;
-        cin >> qr;
-        while (qr != "DONE")
+        InitCount();
+        ++curr;
+        Decomp();
+        string q;
+        s32 x, y;
+        cin >> q;
+        if (q != "DONE")
+            cin >> x >> y;
+        while (q != "DONE")
         {
-            cin >> a >> b;
-            
-            if (qr == "CHANGE")
-                Insert(a + l, b);
-            else if (qr == "QUERY")
-                cout << HldQr(a, b) << '\n';
-            cin >> qr;
+            if (q == "CHANGE")
+                Insert(pos[id[x - 1]] + l, y);
+
+            else if (q == "QUERY")
+                cout << HldQr(x, y) << '\n';
+
+            cin >> q;
+            if (q != "DONE")
+                cin >> x >> y;
         }
     }
 }
@@ -138,8 +161,9 @@ int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
-    
+
     Solve();
 
     return 0;
 }
+
