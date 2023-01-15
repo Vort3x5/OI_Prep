@@ -60,17 +60,18 @@ void BFS(s32 v)
 {
     vis[v] = true;
     for (p32 &edge : graph[v])
-        if (!vis[Find(edge.first)])
-            trl.push(edge);
+        trl.push(edge);
     if (trl.empty())
         return;
     p32 e = trl.top();
-    mst[v].pb(e);
-    mst[e.first].pb({ v, e.second });
-    Union(Find(v), e.first);
-    trl = priority_queue <p32, vector <p32>, decltype(&cmp)> ();
+    trl = priority_queue <p32, vector <p32>, decltype(&cmp)> (cmp);
     if (!vis[e.first])
+    {
+        mst[v].pb(e);
+        mst[e.first].pb({ v, e.second });
+        Union(Find(v), e.first);
         BFS(e.first);
+    }
 }
 
 void MST()
@@ -121,7 +122,7 @@ void Solve()
     {
         if (!vis[v])
             BFS(v);
-        trl = priority_queue <p32, vector <p32>, decltype(&cmp)> ();
+        trl = priority_queue <p32, vector <p32>, decltype(&cmp)> (cmp);
     }
 
     MST();
