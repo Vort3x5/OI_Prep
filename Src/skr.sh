@@ -1,6 +1,6 @@
-g++ -std=c++17 ./Main.cpp -o wzor
-g++ -std=c++17 ./Brut.cpp -o brut
-g++ -std=c++17 ./gen.cpp -o gen
+g++ -std=c++17 -g ./Main.cpp -o wzor
+g++ -std=c++17 -g ./Brut.cpp -o brut
+g++ -std=c++17 -g ./gen.cpp -o gen
 
 for ((i=1; i<=$1; i++)) do
     ./gen $i > ./in/test$i.in

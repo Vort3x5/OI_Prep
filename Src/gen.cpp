@@ -29,19 +29,14 @@ int main(s32 argc, char *argv[])
     srand(atoi(argv[1]));
     s32 n = R(2, 12), q = R(1, 6);
     cout << "1\n" << n << '\n';
-    for (s32 i = 0; i < (n - 1); ++i)
+    s32 src = 1, dest = 2, w = 0;
+    cout << src << ' ' << dest << ' ' << R(1, 8) << '\n';
+    for (s32 i = 3; i < n; ++i)
     {
-        s32 src = 0, dest = 1, w = 0;
-        while (!used[src])
-        {
-            src = R(1, n);
-            used[src] = true;
-        }
-        while (used[dest])
-            dest = R(1, n);
-        used[dest] = true;
-        w = R(1, 6);
-        cout << src << dest << w;
+        src = R(1, i - 1);
+        w = R(1, 8);
+        cout << src << ' ' << i << ' ' << w << '\n';
+        src = 0;
     }
     for (s32 i = 0; i < q; ++i)
     {

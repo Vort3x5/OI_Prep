@@ -17,6 +17,7 @@ typedef vector <s32> v32;
 typedef vector <s64> v64;
 
 s32 t, n, curr = 1;
+bool fnd;
 
 vector <vector <p32>> graph;
 vector <p32> id;
@@ -50,11 +51,20 @@ s32 Query(s32 a, s32 b, s32 r = 0)
 {
     vis[a] = curr;
     if (a == b)
+    {
+        fnd = true;
         return r;
+    }
     for (p32 &e : graph[a])
+    {
         if (vis[e.first] != curr)
-            return Query(e.first, b, max(r, e.second));
-    return 0;
+        {
+            s32 buff = Query(e.first, b, e.second); 
+            if (fnd)
+                return max(buff, r);
+        }
+    }
+    return r;
 }
 
 void Solve()
@@ -73,7 +83,7 @@ void Solve()
             else if (q == "QUERY")
             {
                 cout << Query(x, y) << '\n';
-                ++curr;
+                ++curr, fnd = false;
             }
             cin >> q;
             if (q != "DONE")

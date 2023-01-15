@@ -69,17 +69,15 @@ s32 Query(s32 qa, s32 qb, s32 ta = 1, s32 tb = lfs, s32 node = 1)
     }
 }
 
-s32 InitCount(s32 v = 1, s32 d = 1, s32 w = 0)
+s32 InitCount(s32 v = 1, s32 d = 1)
 {
     vis[v] = curr;
     depth[v] = d;
-    pos[v] = pre++;
-    Insert(pos[v] + l, w);
     for (p32 &e : graph[v])
     {
         if (vis[e.first] != curr)
         {
-            stc[v] += InitCount(e.first, d + 1, e.second);
+            stc[v] += InitCount(e.first, d + 1);
             parent[e.first] = v;
         }
     }
@@ -87,22 +85,22 @@ s32 InitCount(s32 v = 1, s32 d = 1, s32 w = 0)
     return stc[v];
 }
 
-void Decomp(s32 v = 1, s32 h = 1)
+void Decomp(s32 v = 1, s32 h = 1, s32 w = 0)
 {
     head[v] = h;
     vis[v] = curr;
-    s32 heavy = 0;
+    p32 heavy = {0, 0};
+    pos[v] = pre++;
+    Insert(pos[v] + l, w);
     for (p32 &e : graph[v])
-        if (vis[e.first] != curr && stc[heavy] < stc[e.first])
-            heavy = e.first;
+        if (vis[e.first] != curr && stc[heavy.first] < stc[e.first])
+            heavy = e;
 
+    if (heavy.first)
+        Decomp(heavy.first, h, heavy.second);
     for (p32 &e : graph[v])
-    {
-        if (vis[e.first] != curr && e.first == heavy)
-            Decomp(e.first, h);
-        else if (vis[e.first] != curr)
-            Decomp(e.first, e.first);
-    }
+        if (vis[e.first] != curr)
+            Decomp(e.first, e.first, e.second);
 }
 
 s32 HldQr(s32 a, s32 b)
@@ -123,7 +121,7 @@ s32 HldQr(s32 a, s32 b)
     }
     if (pos[a] < pos[b])
         res = max(res, Query(pos[a], pos[b]));
-    else
+    else if (pos[a] > pos[b])
         res = max(res, Query(pos[b], pos[a]));
     return res;
 }
