@@ -19,8 +19,6 @@ typedef vector <s64> v64;
 inline u64 R(u64 a, u64 b)
     { return a + rand() % (b - a + 1); }
 
-bitset <1000010> used;
-
 int main(s32 argc, char *argv[])
 {
     ios_base::sync_with_stdio(false);
