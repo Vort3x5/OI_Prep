@@ -1,4 +1,6 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <math.h>
 
 #define pb push_back
 #define ppb pop_back
@@ -21,48 +23,54 @@ typedef vector <s64> v64;
 s32 t, n, curr = 1, l, lfs, pre = 1;
 
 vector <vector <p32>> graph;
-v32 vis, sub_tree_count, head, depth, tree, pos, parent, id;
+v32 vis, sub_tree_count, head, depth, tree, pos, parent, id, wa;
 
 void Init()
 {
     cin >> n;
     lfs = (1 << (int(log2(n + 1)) + 1));
     l = lfs - 1;
-    graph.resize(n + 10);
     graph.clear();
-    vis.resize(n + 10);
     vis.clear();
-    id.resize(n + 10);
     id.clear();
-    stc.resize(n + 10, 1);
     stc.clear();
-    head.resize(n + 10);
     head.clear();
-    parent.resize(n + 10);
     parent.clear();
-    depth.resize(n + 10);
     depth.clear();
-    pos.resize(n + 10);
     pos.clear();
-    tree.resize(lfs * 2 + 10);
+    wa.clear();
     tree.clear();
+    graph.resize(n + 10);
+    vis.resize(n + 10);
+    id.resize(n + 10);
+    stc.resize(n + 10, 1);
+    head.resize(n + 10);
+    parent.resize(n + 10);
+    depth.resize(n + 10);
+    pos.resize(n + 10);
+    wa.resize(n + 10);
+    tree.resize(lfs * 2 + 20);
     for (s32 i = 0; i < (n - 1); ++i)
     {
-        s32 src, dest, w;
-        cin >> src >> dest >> w;
-        graph[src].pb({dest, w});
-        graph[dest].pb({src, w});
-        id[i] = dest;
+        s32 src, dest;
+        cin >> src >> dest >> wa[i];
+        graph[src].pb({dest, i});
+        graph[dest].pb({src, i});
     }
     parent[1] = 1;
     stc[0] = 0;
 }
 
-inline void Insert(s32 node, s32 val)
+void Insert(s32 qa, s32 val, s32 ta = 1, s32 tb = lfs, s32 node = 1)
 {
-    tree[node] = val;
-    while (node /= 2)
-        tree[node] = max(tree[node * 2], tree[node * 2 + 1]);
+    if(ta == qa && qa == tb) {
+        tree[node] = val;
+        return;
+    }
+    s32 mid = (ta + tb) / 2;
+    if(qa <= mid)Insert(qa, val, ta, mid, node * 2);
+    else Insert(qa, val, mid + 1, tb, node * 2 + 1);
+    tree[node] = max(tree[node * 2], tree[node * 2 + 1]);
 }
 
 s32 Query(s32 qa, s32 qb, s32 ta = 1, s32 tb = lfs, s32 node = 1)
@@ -100,16 +108,21 @@ void Decomp(s32 v = 1, s32 h = 1, s32 w = 0)
     vis[v] = curr;
     p32 heavy = {0, 0};
     pos[v] = pre++;
-    Insert(pos[v] + l, w);
+    Insert(pos[v], w);
     for (p32 &e : graph[v])
         if (vis[e.first] != curr && stc[heavy.first] < stc[e.first])
             heavy = e;
 
     if (heavy.first)
-        Decomp(heavy.first, h, heavy.second);
+        Decomp(heavy.first, h, wa[heavy.second]);
     for (p32 &e : graph[v])
         if (vis[e.first] != curr)
-            Decomp(e.first, e.first, e.second);
+            Decomp(e.first, e.first, wa[e.second]);
+
+    for (p32 &e : graph[v])if(parent[e.first] == v) {
+        id[e.second] = pos[e.first];
+    }
+
 }
 
 s32 HldQr(s32 a, s32 b)
@@ -147,18 +160,19 @@ void Solve()
         string q;
         s32 x, y;
         cin >> q;
-        if (q != "DONE")
+        if (q[0] != 'D')
             cin >> x >> y;
-        while (q != "DONE")
+        while (q[0] != 'D')
         {
-            if (q == "CHANGE")
-                Insert(pos[id[x - 1]] + l, y);
+            if (q[0] == 'C')
+                // bug
+                Insert(pos[id[x - 1]], y);
 
-            else if (q == "QUERY")
+            else if (q[0] == 'Q')
                 cout << HldQr(x, y) << '\n';
 
             cin >> q;
-            if (q != "DONE")
+            if (q[0] != 'D')
                 cin >> x >> y;
         }
     }
