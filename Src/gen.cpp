@@ -25,11 +25,11 @@ int main(s32 argc, char *argv[])
     cin.tie(nullptr);
 
     srand(atoi(argv[1]));
-    s32 n = R(2, 12), q = R(1, 6);
+    s32 n = R(3, 12), q = R(1, 6);
     cout << "1\n" << n << '\n';
     s32 src = 1, dest = 2, w = 0;
     cout << src << ' ' << dest << ' ' << R(1, 8) << '\n';
-    for (s32 i = 3; i < n; ++i)
+    for (s32 i = 3; i < n + 1; ++i)
     {
         src = R(1, i - 1);
         w = R(1, 8);

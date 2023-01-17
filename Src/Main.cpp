@@ -29,14 +29,23 @@ void Init()
     lfs = (1 << (int(log2(n + 1)) + 1));
     l = lfs - 1;
     graph.resize(n + 10);
+    graph.clear();
     vis.resize(n + 10);
+    vis.clear();
     id.resize(n + 10);
+    id.clear();
     stc.resize(n + 10, 1);
+    stc.clear();
     head.resize(n + 10);
+    head.clear();
     parent.resize(n + 10);
+    parent.clear();
     depth.resize(n + 10);
+    depth.clear();
     pos.resize(n + 10);
-    tree.resize(lfs * 2);
+    pos.clear();
+    tree.resize(lfs * 2 + 10);
+    tree.clear();
     for (s32 i = 0; i < (n - 1); ++i)
     {
         s32 src, dest, w;
@@ -120,9 +129,9 @@ s32 HldQr(s32 a, s32 b)
         }
     }
     if (pos[a] < pos[b])
-        res = max(res, Query(pos[a], pos[b]));
+        res = max(res, Query(pos[a] + 1, pos[b]));
     else if (pos[a] > pos[b])
-        res = max(res, Query(pos[b], pos[a]));
+        res = max(res, Query(pos[b] + 1, pos[a]));
     return res;
 }
 
