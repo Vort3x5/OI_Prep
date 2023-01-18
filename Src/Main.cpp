@@ -74,36 +74,24 @@ void Solve()
             break;
         }
     }
-/*
-    if (!k2)
+
+    for (s32 i = 0; i < n && i < 20; ++i)
     {
-        s32 l = (s32)log2(m1[k1]) + 1;
-        for (s32 i = 0; i < (n - l); ++i)
-            cout << 0;
+        if (m1[k1] % 2)
+            cout << '1';
+        else
+            cout << '0';
+        m1[k1] /= 2;
     }
-    else
+    for (s32 i = 20; i < n && i < 40; ++i)
     {
-        s32 l = ((s32)log2(m1[k1]) + 1) + ((s32)log2(m2[k2]) + 1);
-        for (s32 i = 0; i < (n - l); ++i)
-            cout << 0;
-        u64 res = m2[k2];
-        while (res)
-        {
-            cout << res % 2;
-            res /= 2;
-        }
-    }
-    u64 res = m1[k1];
-    while (res)
-    {
-        cout << res % 2;
-        res /= 2;
+        if (m2[k2] % 2)
+            cout << '1';
+        else
+            cout << '0';
+        m2[k2] /= 2;
     }
     cout << '\n';
-*/
-
-    for (s32 i = 0; i < 20; ++i)
-
 }
 
 int main()
