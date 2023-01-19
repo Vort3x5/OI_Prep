@@ -20,8 +20,7 @@ typedef vector <s64> v64;
 
 #define stc sub_tree_count
 
-s32 t, n, curr = 1, l, lfs, pre = 1;
-
+s32 t, n, curr = 1, lfs, pre = 1;
 vector <vector <p32>> graph;
 v32 vis, sub_tree_count, head, depth, tree, pos, parent, id, wa;
 
@@ -29,21 +28,13 @@ void Init()
 {
     cin >> n;
     lfs = (1 << (int(log2(n + 1)) + 1));
-    l = lfs - 1;
+    pre = 1;
     graph.clear();
-    vis.clear();
-    id.clear();
-    stc.clear();
-    head.clear();
-    parent.clear();
-    depth.clear();
-    pos.clear();
-    wa.clear();
     tree.clear();
     graph.resize(n + 10);
     vis.resize(n + 10);
     id.resize(n + 10);
-    stc.resize(n + 10, 1);
+    stc.resize(n + 10);
     head.resize(n + 10);
     parent.resize(n + 10);
     depth.resize(n + 10);
@@ -58,7 +49,6 @@ void Init()
         graph[dest].pb({src, i});
     }
     parent[1] = 1;
-    stc[0] = 0;
 }
 
 void Insert(s32 qa, s32 val, s32 ta = 1, s32 tb = lfs, s32 node = 1)
@@ -90,6 +80,7 @@ s32 InitCount(s32 v = 1, s32 d = 1)
 {
     vis[v] = curr;
     depth[v] = d;
+    stc[v] = 1;
     for (p32 &e : graph[v])
     {
         if (vis[e.first] != curr)
@@ -157,6 +148,7 @@ void Solve()
         InitCount();
         ++curr;
         Decomp();
+        ++curr;
         string q;
         s32 x, y;
         cin >> q;
@@ -165,9 +157,7 @@ void Solve()
         while (q[0] != 'D')
         {
             if (q[0] == 'C')
-                // bug
-                Insert(pos[id[x - 1]], y);
-
+                Insert(id[x - 1], y);
             else if (q[0] == 'Q')
                 cout << HldQr(x, y) << '\n';
 

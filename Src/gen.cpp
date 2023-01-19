@@ -25,11 +25,11 @@ int main(s32 argc, char *argv[])
     cin.tie(nullptr);
 
     srand(atoi(argv[1]));
-    s32 n = R(3, 12), q = R(1, 6);
+    s32 n = R(2, 12), q = R(1, 6);
     cout << "1\n" << n << '\n';
     s32 src = 1, dest = 2, w = 0;
     cout << src << ' ' << dest << ' ' << R(1, 8) << '\n';
-    for (s32 i = 3; i < n + 1; ++i)
+    for (s32 i = 3; i <= n; ++i)
     {
         src = R(1, i - 1);
         w = R(1, 8);
@@ -48,7 +48,7 @@ int main(s32 argc, char *argv[])
         else
         {
             cout << "QUERY ";
-            s32 a = R(1, n), b;
+            s32 a = R(1, n - 1), b;
             b = R(a + 1, n);
             cout << a << ' ' << b << '\n';
         }
