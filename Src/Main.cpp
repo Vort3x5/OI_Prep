@@ -18,17 +18,18 @@ typedef vector <s64> v64;
 
 #define stc sub_tree_count
 
-s32 n, k, curr = 1, r;
+s32 n, k, curr = 1;
 
 vector <v32> graph;
 bitset <1000010> vand;
-v32 sub_tree_count, res, vis;
+v32 sub_tree_count, res, sres, vis;
 
 void Init()
 {
     cin >> n >> k;
     graph.resize(n + 10);
     res.resize(n + 10);
+    sres.resize(n + 10);
     vis.resize(n + 10);
     stc.resize(n + 10, 1);
     for (s32 i = 0; i < (n - 1); ++i)
@@ -38,22 +39,18 @@ void Init()
         graph[src].pb(dest);
         graph[dest].pb(src);
     }
+    res[0] = 1;
 }
 
-s32 DFS(s32 v = 1, s32 dist = 0)
+s32 InitDFS(s32 v = 1, s32 dist = 0)
 {
     vis[v] = curr;
-    ++res[dist];
     for (s32 &e : graph[v])
     {
         if (vis[e] != curr && !vand[e])
-            stc[v] += DFS(e, dist + 1);
+            stc[v] += InitDFS(e, dist + 1);
     }
     return stc[v];
-}
-
-s32 CentreDFS(s32 v, s32 dist = 0)
-{
 }
 
 s32 FindCentroid(s32 v)
@@ -71,19 +68,43 @@ s32 FindCentroid(s32 v)
     return v;
 }
 
-void Calc(s32 v, s32 dist = 0)
+void All(s32 v, s32 dist = 0)
 {
+    res[dist] += (bool)dist;
+    vis[v] = curr;
+    for (s32 &e : graph[v])
+        if (!vand[e] && vis[e] != curr)
+            All(e, dist + 1);
 }
 
-s32 Decomp(s32 v)
+void Sub(s32 v, s32 dist = 0)
 {
-    ++curr;
+    ++sres[dist + 1];
+    --res[dist + 1];
+    vis[v] = curr;
+    for (s32 &e : graph[v])
+        if (vis[e] != curr && !vand[e])
+            Sub(e, dist + 1);
+}
+
+s32 Decomp(s32 v, s32 r = 0)
+{
     s32 centroid = FindCentroid(v);
     ++curr;
     vand[centroid] = true;
-    DFS(centroid);
+    All(centroid);
     ++curr;
-    Calc(centroid);
+    for (s32 &e : graph[centroid])
+    {
+        if (!vand[e])
+        {
+            Sub(e);
+            ++curr;
+            for (s32 i = 1; i <= k; ++i)
+                r += sres[i] * res[k - i];
+            fill(sres.begin(), sres.end(), 0);
+        }
+    }
     for (s32 &e : graph[centroid])
         if (!vand[e])
             r += Decomp(e);
@@ -92,7 +113,8 @@ s32 Decomp(s32 v)
 
 void Solve()
 {
-    DFS();
+    InitDFS();
+    ++curr;
     cout << Decomp(1) << '\n';
 }
 
