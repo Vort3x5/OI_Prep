@@ -62,7 +62,7 @@ s32 FindCentroid(s32 v)
         {
             stc[v] -= stc[e];
             stc[e] += stc[v];
-            return e;
+            return FindCentroid(e);
         }
     }
     return v;
@@ -115,7 +115,7 @@ void Solve()
 {
     InitDFS();
     ++curr;
-    cout << Decomp(1) << '\n';
+    cout << (k > n ? 0 : Decomp(1)) << '\n';
 }
 
 int main()
