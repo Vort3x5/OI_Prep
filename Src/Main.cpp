@@ -65,12 +65,16 @@ void FindEulPath(int v)
 bool WereVisited()
 {
     for (int v = 1; v <= n; ++v)
-    {
         for (auto edge : graph[v].id)
             if (!e_vis[edge])
                 return false;
-    }
     return true;
+}
+
+void Abort()
+{
+	printf("IMPOSSIBLE\n");
+	return;
 }
 
 void Solve()
@@ -84,16 +88,11 @@ void Solve()
         if (graph[v].deg % 2)
             cycle = false;
     if (!cycle || graph[1].deston.empty())
-    {
-        printf("IMPOSSIBLE\n");
-        return;
-    }
+		Abort();
+
     FindEulPath(1);
     if (!WereVisited() || eul_path.back() != 1)
-    {
-        printf("IMPOSSIBLE\n");
-        return;
-    }
+		Abort();
 
     for (auto res : eul_path)
         printf("%d ", res);
