@@ -11,7 +11,7 @@ typedef vector <int> v_i;
 
 struct Edge
 {
-    vector <int> childern;
+    vector <int> children;
     int pos;
 };
 
@@ -43,7 +43,7 @@ void Init()
         {
             int q;
             scanf("%d", &q);
-            graph[v].childern.pb(q);
+            graph[v].children.pb(q);
         }
     }
 }
@@ -72,7 +72,7 @@ void Dfs(int v, int i = 1)
 {
     graph[v].pos += !graph[v].pos * i;
     found.pb(graph[v].pos);
-    for (auto node : graph[v].childern)
+    for (auto node : graph[v].children)
     {
         Dfs(node, ++i);
         found.pb(graph[v].pos);
